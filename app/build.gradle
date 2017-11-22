@@ -1,13 +1,18 @@
 apply plugin: 'com.android.application'
 
+def cfg  = rootProject.ext.configuration
+def libs = rootProject.ext.libs
 android {
-    compileSdkVersion 26
+
+    compileSdkVersion cfg.compileVersion
+    buildToolsVersion cfg.buildToolsVersion
+
     defaultConfig {
-        applicationId "com.iamsalih.triviaduello"
-        minSdkVersion 15
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        applicationId cfg.applicationId
+        minSdkVersion cfg.minSdk
+        targetSdkVersion cfg.targetSdk
+        versionCode cfg.versionCode
+        versionName cfg.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -19,10 +24,20 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    // Test dependencies
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Support library
+    implementation "com.android.support:appcompat-v7:${libs.supportLibraryVersion}"
+    implementation "com.android.support.constraint:constraint-layout:${libs.constraintLayoutVersion}"
+
+    // Butterknife
+    implementation "com.jakewharton:butterknife:${libs.butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${libs.butterknife}"
 }
