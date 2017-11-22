@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-def cfg  = rootProject.ext.configuration
+def cfg = rootProject.ext.configuration
 def libs = rootProject.ext.libs
 android {
 
@@ -40,4 +40,7 @@ dependencies {
     // Butterknife
     implementation "com.jakewharton:butterknife:${libs.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${libs.butterknife}"
+
+    //ViewPager indicator
+    implementation "me.relex:circleindicator:${libs.viewPagerIndicator}"
 }
