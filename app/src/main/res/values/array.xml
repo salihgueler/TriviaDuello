@@ -4,20 +4,17 @@
         <item>@color/colorPrimary</item>
         <item>@color/colorPrimaryDark</item>
         <item>@color/colorAccent</item>
-        <item>@color/colorPrimary</item>
     </array>
 
     <array name="onboarding_image_resource">
         <item>@drawable/ic_public_white</item>
         <item>@drawable/ic_schedule_white</item>
         <item>@drawable/ic_list_white</item>
-        <item>@drawable/ic_public_white</item>
     </array>
 
     <array name="onboarding_string_resource">
         <item>@string/onboarding_challenge_text</item>
         <item>@string/onboarding_time_text</item>
         <item>@string/onboarding_leaderboard_text</item>
-        <item>@string/onboarding_challenge_text</item>
     </array>
 </resources>

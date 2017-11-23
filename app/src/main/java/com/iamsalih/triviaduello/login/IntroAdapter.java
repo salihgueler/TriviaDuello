@@ -18,7 +18,10 @@ public class IntroAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // TODO: Add login view.
+
+        if (position == 3) {
+            return LoginFragment.newInstance();
+        }
         return IntroFragment.newInstance(position);
     }
 

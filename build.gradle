@@ -17,7 +17,10 @@ buildscript {
             supportLibraryVersion  : "27.0.1",
             constraintLayoutVersion: "1.0.2",
             butterknife            : "8.8.1",
-            viewPagerIndicator     : "1.2.2@aar"
+            viewPagerIndicator     : "1.2.2@aar",
+            firebase               : "11.6.0",
+            facebook               : "[4,5)",
+            timber                 : "4.6.0"
     ]
     repositories {
         google()
@@ -25,7 +28,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
-
+        classpath 'com.google.gms:google-services:3.1.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -35,6 +38,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://maven.google.com" // Google's Maven repository
+        }
     }
 }
 
