@@ -9,12 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.iamsalih.triviaduello.R;
 
 import java.util.Arrays;
@@ -55,7 +63,7 @@ public class LoginFragment extends Fragment {
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Timber.v("onSuccess(): " + loginResult.getAccessToken().getUserId());
+                signInWithFacebookLoginResultToken(loginResult.getAccessToken());
             }
 
             @Override
@@ -69,6 +77,23 @@ public class LoginFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private void signInWithFacebookLoginResultToken(AccessToken accessToken) {
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getContext(), "You are logged in", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "You are not logged in", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
