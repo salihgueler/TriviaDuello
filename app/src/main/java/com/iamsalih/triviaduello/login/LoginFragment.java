@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.mainscreen.MainScreenActivity;
 
 import java.util.Arrays;
 
@@ -40,6 +42,9 @@ public class LoginFragment extends Fragment {
 
     @BindView(R.id.login_button)
     Button loginButton;
+
+    @BindView(R.id.loading_indicator)
+    ProgressBar loadingIndicator;
 
     private CallbackManager callbackManager;
 
@@ -89,8 +94,13 @@ public class LoginFragment extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "You are logged in", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), MainScreenActivity.class);
+                    getActivity().startActivity(intent);
+                    getActivity().finish();
                 } else {
                     Toast.makeText(getContext(), "You are not logged in", Toast.LENGTH_SHORT).show();
+                    loadingIndicator.setVisibility(View.GONE);
+                    loginButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -105,5 +115,7 @@ public class LoginFragment extends Fragment {
     @OnClick(R.id.login_button)
     public void startLoginWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+        loadingIndicator.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.GONE);
     }
 }

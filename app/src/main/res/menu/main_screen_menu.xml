@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/ic_assessment_white"
+        android:title="Leaderboard"
+        app:showAsAction="always" />
+    <item
+        android:icon="@drawable/ic_settings_white"
+        android:title="Settings"
+        app:showAsAction="always" />
+</menu>

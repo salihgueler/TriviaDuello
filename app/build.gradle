@@ -53,6 +53,14 @@ dependencies {
 
     // Timber
     implementation "com.jakewharton.timber:timber:${libs.timber}"
+
+    //Retrofit
+    implementation "com.squareup.retrofit2:retrofit:${libs.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${libs.retrofit}"
+
+    //Gson
+    implementation "com.google.code.gson:gson:${libs.gson}"
+
 }
 
 buildscript {

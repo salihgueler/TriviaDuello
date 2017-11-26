@@ -20,7 +20,9 @@ buildscript {
             viewPagerIndicator     : "1.2.2@aar",
             firebase               : "9.8.0",
             facebook               : "[4,5)",
-            timber                 : "4.6.0"
+            timber                 : "4.6.0",
+            retrofit               : "2.3.0",
+            gson                   : "2.8.2"
     ]
     repositories {
         google()
