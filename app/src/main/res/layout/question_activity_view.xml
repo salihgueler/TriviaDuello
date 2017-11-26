@@ -86,7 +86,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/onboarding_main_margin"
-        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@id/first_option_guideline"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -96,6 +95,7 @@
             android:id="@+id/first_option_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="Option A" />
@@ -116,6 +116,7 @@
             android:id="@+id/second_option_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="Option B" />
@@ -136,6 +137,7 @@
             android:id="@+id/third_option_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="Option C" />
@@ -156,6 +158,7 @@
             android:id="@+id/fourth_option_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="Option D" />
