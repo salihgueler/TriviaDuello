@@ -5,39 +5,32 @@
     android:layout_height="match_parent">
 
     <android.support.constraint.Guideline
-        android:id="@+id/timer_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".20" />
-
-    <android.support.constraint.Guideline
         android:id="@+id/question_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".60" />
+        app:layout_constraintGuide_percent=".40" />
 
     <android.support.constraint.Guideline
         android:id="@+id/first_option_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".70" />
+        app:layout_constraintGuide_percent=".55" />
 
     <android.support.constraint.Guideline
         android:id="@+id/second_option_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".80" />
+        app:layout_constraintGuide_percent=".70" />
 
     <android.support.constraint.Guideline
         android:id="@+id/third_option_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".90" />
+        app:layout_constraintGuide_percent=".85" />
 
     <android.support.constraint.Guideline
         android:id="@+id/fourth_option_guideline"
@@ -46,6 +39,12 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1.0" />
 
+    <android.support.constraint.Guideline
+        android:id="@+id/timer_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".30" />
 
     <TextView
         android:id="@+id/timer_holder"
@@ -56,9 +55,9 @@
         android:gravity="center"
         android:text="TIMER"
         android:textSize="64sp"
-        app:layout_constraintBottom_toTopOf="@id/timer_guideline"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/timer_vertical_guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.CardView
@@ -67,9 +66,9 @@
         android:layout_height="0dp"
         android:layout_margin="@dimen/onboarding_main_margin"
         app:layout_constraintBottom_toTopOf="@id/question_guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/timer_holder"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timer_holder">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/question_text"
@@ -88,7 +87,7 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@id/first_option_guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/timer_holder"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/question_holder">
 
@@ -108,7 +107,7 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@id/second_option_guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/timer_holder"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/first_option_holder">
 
@@ -128,7 +127,7 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@id/third_option_guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/timer_holder"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/second_option_holder">
 
@@ -148,7 +147,7 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@id/fourth_option_guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/timer_holder"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/third_option_holder">
 
