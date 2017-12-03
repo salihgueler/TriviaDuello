@@ -11,24 +11,24 @@ import java.util.List;
  * Created by muhammedsalihguler on 26.11.17.
  */
 
-public class Result implements Parcelable {
+public class QuestionList implements Parcelable {
 
     @SerializedName("results")
     private List<Question> questionList;
 
-    protected Result(Parcel in) {
+    protected QuestionList(Parcel in) {
         questionList = in.createTypedArrayList(Question.CREATOR);
     }
 
-    public static final Creator<Result> CREATOR = new Creator<Result>() {
+    public static final Creator<QuestionList> CREATOR = new Creator<QuestionList>() {
         @Override
-        public Result createFromParcel(Parcel in) {
-            return new Result(in);
+        public QuestionList createFromParcel(Parcel in) {
+            return new QuestionList(in);
         }
 
         @Override
-        public Result[] newArray(int size) {
-            return new Result[size];
+        public QuestionList[] newArray(int size) {
+            return new QuestionList[size];
         }
     };
 

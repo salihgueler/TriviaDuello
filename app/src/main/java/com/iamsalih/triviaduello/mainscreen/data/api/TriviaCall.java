@@ -1,10 +1,9 @@
 package com.iamsalih.triviaduello.mainscreen.data.api;
 
-import com.iamsalih.triviaduello.mainscreen.data.model.Result;
+import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -14,6 +13,6 @@ import retrofit2.http.Query;
 public interface TriviaCall {
 
     @GET("api.php")
-    Call<Result> getQuestions(@Query("amount") int amount, @Query("type") String type);
+    Call<QuestionList> getQuestions(@Query("amount") int amount, @Query("type") String type);
 
 }

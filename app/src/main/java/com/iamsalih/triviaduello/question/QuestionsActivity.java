@@ -3,22 +3,18 @@ package com.iamsalih.triviaduello.question;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.mainscreen.data.model.Question;
-import com.iamsalih.triviaduello.mainscreen.data.model.Result;
+import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,7 +45,7 @@ public class QuestionsActivity extends AppCompatActivity {
     @BindView(R.id.timer_holder)
     TextView timerText;
 
-    private Result result;
+    private QuestionList questionList;
     private CountDownTimer countDownTimer;
     private Question currentQuestion;
     private List<Question> wrongQuestions = new ArrayList<>();
@@ -59,14 +55,14 @@ public class QuestionsActivity extends AppCompatActivity {
         setContentView(R.layout.question_activity_view);
         ButterKnife.bind(this);
         if (getIntent().getExtras() != null) {
-            result = getIntent().getParcelableExtra("list");
+            questionList = getIntent().getParcelableExtra("list");
             generateQuestionView();
         }
 
     }
 
     private void generateQuestionView() {
-        List<Question> questions = result.getQuestionList();
+        List<Question> questions = questionList.getQuestionList();
 
         if (questions.size() > 0) {
             currentQuestion = questions.remove(0);
