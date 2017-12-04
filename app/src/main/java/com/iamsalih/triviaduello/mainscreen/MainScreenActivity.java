@@ -17,7 +17,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.iamsalih.triviaduello.R;
-import com.iamsalih.triviaduello.mainscreen.data.api.TriviaCall;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
 
@@ -26,17 +25,12 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by muhammedsalihguler on 25.11.17.
  */
 
-public class MainScreenActivity extends AppCompatActivity {
+public class MainScreenActivity extends AppCompatActivity implements MainScreenView {
 
 
     @BindView(R.id.practice_mode_button)
@@ -48,11 +42,14 @@ public class MainScreenActivity extends AppCompatActivity {
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
 
+    private MainScreenPresenter presenter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen_layout);
         ButterKnife.bind(this);
+        presenter = new MainScreenPresenter(this);
     }
 
     @Override
@@ -63,33 +60,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://opentdb.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        TriviaCall triviaCall = retrofit.create(TriviaCall.class);
-        practiceModeButton.setVisibility(View.GONE);
-        duelModeButton.setVisibility(View.GONE);
-        loadingIndicator.setVisibility(View.VISIBLE);
-        triviaCall.getQuestions(10, "multiple").enqueue(new Callback<QuestionList>() {
-            @Override
-            public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
-                practiceModeButton.setVisibility(View.VISIBLE);
-                duelModeButton.setVisibility(View.VISIBLE);
-                loadingIndicator.setVisibility(View.GONE);
-                Intent intent = new Intent(MainScreenActivity.this, QuestionsActivity.class);
-                intent.putExtra("list", response.body());
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(Call<QuestionList> call, Throwable t) {
-                t.printStackTrace();
-                practiceModeButton.setVisibility(View.VISIBLE);
-                duelModeButton.setVisibility(View.VISIBLE);
-                loadingIndicator.setVisibility(View.GONE);
-            }
-        });
+        presenter.getQuestions();
     }
 
     @OnClick(R.id.duel_mode_button)
@@ -112,9 +83,6 @@ public class MainScreenActivity extends AppCompatActivity {
                         databaseReference.child(dataSnapshot.getKey()).removeValue();
                         databaseReference.child(user.getUid()).removeValue();
                     }
-                    practiceModeButton.setVisibility(View.VISIBLE);
-                    duelModeButton.setVisibility(View.VISIBLE);
-                    loadingIndicator.setVisibility(View.GONE);
                 }
             }
 
@@ -146,5 +114,26 @@ public class MainScreenActivity extends AppCompatActivity {
         databaseReference.child(game_id).setValue(true);
         databaseReference.child(game_id).child("player_1").setValue(key);
         databaseReference.child(game_id).child("player_2").setValue(uid);
+    }
+
+    @Override
+    public void showProgressBar() {
+        practiceModeButton.setVisibility(View.GONE);
+        duelModeButton.setVisibility(View.GONE);
+        loadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        practiceModeButton.setVisibility(View.VISIBLE);
+        duelModeButton.setVisibility(View.VISIBLE);
+        loadingIndicator.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void startGameView(QuestionList questionList) {
+        Intent intent = new Intent(MainScreenActivity.this, QuestionsActivity.class);
+        intent.putExtra("list", questionList);
+        startActivity(intent);
     }
 }

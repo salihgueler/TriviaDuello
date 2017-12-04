@@ -55,13 +55,16 @@ dependencies {
     // Timber
     implementation "com.jakewharton.timber:timber:${libs.timber}"
 
-    //Retrofit
+    // Retrofit
     implementation "com.squareup.retrofit2:retrofit:${libs.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${libs.retrofit}"
 
-    //Gson
+    // Gson
     implementation "com.google.code.gson:gson:${libs.gson}"
 
+    // Dagger
+    implementation "com.google.dagger:dagger:${libs.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libs.dagger}"
 }
 
 buildscript {
