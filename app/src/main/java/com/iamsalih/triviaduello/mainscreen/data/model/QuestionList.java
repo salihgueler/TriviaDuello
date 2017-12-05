@@ -16,6 +16,8 @@ public class QuestionList implements Parcelable {
     @SerializedName("results")
     private List<Question> questionList;
 
+    public QuestionList() {}
+
     protected QuestionList(Parcel in) {
         questionList = in.createTypedArrayList(Question.CREATOR);
     }

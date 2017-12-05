@@ -11,4 +11,5 @@ public interface MainScreenView {
     void showProgressBar();
     void hideProgressBar();
     void startGameView(QuestionList questionList);
+    void startDuelGame(String firstPlayer, String secondPlayer, QuestionList questionList);
 }

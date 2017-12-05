@@ -1,6 +1,8 @@
 package com.iamsalih.triviaduello.mainscreen;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
@@ -32,15 +34,19 @@ public class MainScreenPresenter {
         TriviaDuelloApplication.component.inject(this);
     }
 
-    public void getQuestions() {
+    public void getQuestions(@Nullable final String firstPlayer, @Nullable final String secondPlayer) {
 
         view.showProgressBar();
 
         triviaCall.getQuestions(10, "multiple").enqueue(new Callback<QuestionList>() {
             @Override
             public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
+                if (TextUtils.isEmpty(firstPlayer) || TextUtils.isEmpty(secondPlayer)) {
+                    view.startGameView(response.body());
+                } else {
+                    view.startDuelGame(firstPlayer, secondPlayer, response.body());
+                }
                 view.hideProgressBar();
-                view.startGameView(response.body());
             }
             @Override
             public void onFailure(Call<QuestionList> call, Throwable t) {

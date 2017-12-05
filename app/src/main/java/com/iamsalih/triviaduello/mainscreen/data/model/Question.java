@@ -31,6 +31,8 @@ public class Question implements Parcelable {
     @SerializedName("incorrect_answers")
     List<String> incorrectOptions;
 
+    public Question(){}
+
     protected Question(Parcel in) {
         category = in.readString();
         type = in.readString();

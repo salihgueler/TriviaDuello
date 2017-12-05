@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
 
@@ -43,6 +45,9 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     ProgressBar loadingIndicator;
 
     private MainScreenPresenter presenter;
+    private Game currentGame;
+    private DatabaseReference databaseReference;
+    private ChildEventListener childEventListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,29 +65,36 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
-        presenter.getQuestions();
+        presenter.getQuestions(null, null);
     }
 
     @OnClick(R.id.duel_mode_button)
     public void startDuelMode() {
+
         practiceModeButton.setVisibility(View.GONE);
         duelModeButton.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseReference = database.getReference("Open Games");
+        final DatabaseReference databaseGameReference = database.getReference("Open Games");
+        databaseReference = database.getReference("Games");
 
-        databaseReference.addChildEventListener(new ChildEventListener() {
+        if (childEventListener == null) {
+            initializeEventListenerForGames();
+        }
+        databaseReference.addChildEventListener(childEventListener);
+
+        databaseGameReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String newUserId) {
                 if (!user.getUid().equals(dataSnapshot.getKey())) {
-                    if (newUserId != null && !newUserId.equals(databaseReference.getKey())) {
-                        startDuelGame(dataSnapshot.getKey(), user.getUid());
-                        databaseReference.removeEventListener(this);
-                        databaseReference.child(dataSnapshot.getKey()).removeValue();
-                        databaseReference.child(user.getUid()).removeValue();
+                    if (newUserId != null && !newUserId.equals(databaseGameReference.getKey())) {
+                        presenter.getQuestions(dataSnapshot.getKey(), user.getUid());
+                        databaseGameReference.removeEventListener(this);
+                        databaseGameReference.child(dataSnapshot.getKey()).removeValue();
+                        databaseGameReference.child(user.getUid()).removeValue();
                     }
+                    hideProgressBar();
                 }
             }
 
@@ -104,16 +116,58 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-        databaseReference.child(user.getUid()).setValue(true);
+        databaseGameReference.child(user.getUid()).setValue(true);
     }
 
-    private void startDuelGame(String key, String uid) {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference databaseReference = database.getReference("Games");
+    private void initializeEventListenerForGames() {
+        childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (currentGame == null) {
+                    currentGame = dataSnapshot.getValue(Game.class);
+                    if (!currentGame.isActiveGame()) {
+                        currentGame.setActiveGame(true);
+                        databaseReference.child(currentGame.getGameId()).setValue(currentGame);
+                        startGameView(currentGame.getQuestionList());
+                    } else {
+                        currentGame = null;
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    @Override
+    public void startDuelGame(String key, String uid, QuestionList questionList) {
         String game_id = UUID.randomUUID().toString();
-        databaseReference.child(game_id).setValue(true);
-        databaseReference.child(game_id).child("player_1").setValue(key);
-        databaseReference.child(game_id).child("player_2").setValue(uid);
+        currentGame = new Game();
+        currentGame.setGameId(game_id);
+        currentGame.setFirstPlayer(key);
+        currentGame.setSecondPlayer(uid);
+        currentGame.setQuestionList(questionList);
+        currentGame.setActiveGame(false);
+        databaseReference.child(game_id).setValue(currentGame);
+        startGameView(questionList);
     }
 
     @Override
@@ -132,6 +186,11 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public void startGameView(QuestionList questionList) {
+        currentGame = null;
+        if (childEventListener != null) {
+            databaseReference.removeEventListener(childEventListener);
+        }
+        childEventListener = null;
         Intent intent = new Intent(MainScreenActivity.this, QuestionsActivity.class);
         intent.putExtra("list", questionList);
         startActivity(intent);
