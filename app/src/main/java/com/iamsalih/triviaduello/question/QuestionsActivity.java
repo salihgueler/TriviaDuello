@@ -61,6 +61,8 @@ public class QuestionsActivity extends AppCompatActivity {
     private String gameID;
     private DatabaseReference databaseReference;
     private List<Question> questions = new ArrayList<>();
+    private ChildEventListener childEventListener;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +76,9 @@ public class QuestionsActivity extends AppCompatActivity {
         }
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("Games");
+        databaseReference = firebaseDatabase.getReference("Games/"+gameID+"/questionList");
 
-        databaseReference.addChildEventListener(new ChildEventListener() {
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -84,10 +86,7 @@ public class QuestionsActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                currentGame = dataSnapshot.getValue(Game.class);
-                if (currentGame.getGameId().equals(gameID)) {
-                    generateQuestionView();
-                }
+                generateQuestionView();
             }
 
             @Override
@@ -104,7 +103,16 @@ public class QuestionsActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        databaseReference.addChildEventListener(childEventListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(childEventListener);
+        questions.clear();
+        countDownTimer.cancel();
     }
 
     private void generateQuestionView() {
@@ -188,7 +196,7 @@ public class QuestionsActivity extends AppCompatActivity {
         currentQuestion.setAnsweredBy(user.getUid());
         qList.add(position, currentQuestion);
         questionList.setQuestionList(qList);
-        databaseReference.child(gameID).child("questionList").setValue(questionList);
+        databaseReference.setValue(questionList);
     }
 
     private int getPositionOfCurrentQuestion(List<Question> questions) {
