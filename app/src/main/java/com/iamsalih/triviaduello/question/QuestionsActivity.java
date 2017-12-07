@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.Question;
@@ -140,13 +142,53 @@ public class QuestionsActivity extends AppCompatActivity {
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
-            createResultScreen();
+            calculatePoint();
         }
     }
 
-    private void createResultScreen() {
+    private void calculatePoint() {
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                QuestionList questionList = dataSnapshot.getValue(QuestionList.class);
+                int point = 0;
+                for (Question question: questionList.getQuestionList()) {
+                    if (question.getAnsweredBy().trim().equalsIgnoreCase(userID)) {
+                        if (questionAnsweredCorrectly(question)) {
+                            if (question.getDifficulty().trim().equalsIgnoreCase("easy")){
+                                point += 1;
+                            } else if (question.getDifficulty().trim().equalsIgnoreCase("medium")){
+                                point += 2;
+                            } else if (question.getDifficulty().trim().equalsIgnoreCase("hard")){
+                                point += 3;
+                            }
+                        }
+                    }
+                }
+                createResultScreen(point);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private boolean questionAnsweredCorrectly(Question question) {
+        for (Question wrongQuestion : wrongQuestions) {
+            if (wrongQuestion.getQuestion().trim().equalsIgnoreCase(question.getQuestion())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void createResultScreen(int point) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setTitle("You have " + wrongQuestions.size() + " wrong answers.")
+                .setTitle("You have " + point + " points.")
                 .setMessage(generateCorrectAnswers())
                 .setCancelable(false)
                 .setPositiveButton("Close", new DialogInterface.OnClickListener() {
