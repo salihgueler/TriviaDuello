@@ -9,7 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.Question;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 
@@ -49,6 +57,10 @@ public class QuestionsActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private Question currentQuestion;
     private List<Question> wrongQuestions = new ArrayList<>();
+    private Game currentGame;
+    private String gameID;
+    private DatabaseReference databaseReference;
+    private List<Question> questions = new ArrayList<>();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +68,46 @@ public class QuestionsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         if (getIntent().getExtras() != null) {
             questionList = getIntent().getParcelableExtra("list");
+            gameID = getIntent().getStringExtra("gameID");
+            questions.addAll(questionList.getQuestionList());
             generateQuestionView();
         }
 
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Games");
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                currentGame = dataSnapshot.getValue(Game.class);
+                if (currentGame.getGameId().equals(gameID)) {
+                    generateQuestionView();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void generateQuestionView() {
-        List<Question> questions = questionList.getQuestionList();
 
         if (questions.size() > 0) {
             currentQuestion = questions.remove(0);
@@ -135,7 +180,25 @@ public class QuestionsActivity extends AppCompatActivity {
     @OnClick({R.id.first_option_text, R.id.second_option_text, R.id.third_option_text, R.id.fourth_option_text})
     public void onOptionClick(TextView view) {
         checkCorrectAnswer(view.getText().toString());
-        generateQuestionView();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        List<Question> qList = questionList.getQuestionList();
+        int position = getPositionOfCurrentQuestion(qList);
+        qList.remove(position);
+        currentQuestion.setAnsweredBy(user.getUid());
+        qList.add(position, currentQuestion);
+        questionList.setQuestionList(qList);
+        databaseReference.child(gameID).child("questionList").setValue(questionList);
+    }
+
+    private int getPositionOfCurrentQuestion(List<Question> questions) {
+
+        for (int i = 0 ; i < questions.size() ; i++) {
+            if (questions.get(i).getQuestion().equals(currentQuestion.getQuestion())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void checkCorrectAnswer(String answer) {

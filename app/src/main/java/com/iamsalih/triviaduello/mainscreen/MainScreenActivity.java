@@ -186,13 +186,14 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public void startGameView(QuestionList questionList) {
+        Intent intent = new Intent(MainScreenActivity.this, QuestionsActivity.class);
+        intent.putExtra("list", questionList);
+        intent.putExtra("gameID", currentGame == null ? "" : currentGame.getGameId());
+        startActivity(intent);
         currentGame = null;
         if (childEventListener != null) {
             databaseReference.removeEventListener(childEventListener);
         }
         childEventListener = null;
-        Intent intent = new Intent(MainScreenActivity.this, QuestionsActivity.class);
-        intent.putExtra("list", questionList);
-        startActivity(intent);
     }
 }

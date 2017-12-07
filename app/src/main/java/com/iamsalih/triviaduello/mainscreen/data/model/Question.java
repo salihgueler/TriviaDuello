@@ -31,6 +31,8 @@ public class Question implements Parcelable {
     @SerializedName("incorrect_answers")
     List<String> incorrectOptions;
 
+    private String answeredBy = "";
+
     public Question(){}
 
     protected Question(Parcel in) {
@@ -40,6 +42,7 @@ public class Question implements Parcelable {
         question = in.readString();
         correctAnswer = in.readString();
         incorrectOptions = in.createStringArrayList();
+        answeredBy = in.readString();
     }
 
     public static final Creator<Question> CREATOR = new Creator<Question>() {
@@ -98,6 +101,14 @@ public class Question implements Parcelable {
         return incorrectOptions;
     }
 
+    public String getAnsweredBy() {
+        return answeredBy;
+    }
+
+    public void setAnsweredBy(String answeredBy) {
+        this.answeredBy = answeredBy;
+    }
+
     public void setIncorrectOptions(List<String> incorrectOptions) {
         this.incorrectOptions = incorrectOptions;
     }
@@ -115,5 +126,6 @@ public class Question implements Parcelable {
         parcel.writeString(question);
         parcel.writeString(correctAnswer);
         parcel.writeStringList(incorrectOptions);
+        parcel.writeString(answeredBy);
     }
 }
