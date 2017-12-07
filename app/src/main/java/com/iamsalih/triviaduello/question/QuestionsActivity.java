@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -167,6 +168,25 @@ public class QuestionsActivity extends AppCompatActivity {
                         }
                     }
                 }
+                final DatabaseReference leaderBoard = FirebaseDatabase.getInstance().getReference("leaderBoard/"+userID);
+                final int finalPoint = point;
+                leaderBoard.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Long pointFromServer = dataSnapshot.getValue(Long.class);
+
+                        if (pointFromServer == null) {
+                            pointFromServer = 0l;
+                        }
+                        pointFromServer += finalPoint;
+                        leaderBoard.setValue(pointFromServer);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 createResultScreen(point);
             }
 
