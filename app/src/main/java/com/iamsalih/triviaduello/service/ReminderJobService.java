@@ -1,4 +1,4 @@
-package com.iamsalih.triviaduello;
+package com.iamsalih.triviaduello.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+import com.iamsalih.triviaduello.R;
 
 /**
  * Created by muhammedsalihguler on 08.12.17.

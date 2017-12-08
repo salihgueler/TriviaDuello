@@ -2,11 +2,12 @@ package com.iamsalih.triviaduello;
 
 import android.app.Application;
 
+import com.iamsalih.triviaduello.di.component.DaggerFirebaseComponent;
 import com.iamsalih.triviaduello.di.component.DaggerNetworkComponent;
+import com.iamsalih.triviaduello.di.component.FirebaseComponent;
 import com.iamsalih.triviaduello.di.component.NetworkComponent;
+import com.iamsalih.triviaduello.di.module.FirebaseModule;
 import com.iamsalih.triviaduello.di.module.NetworkModule;
-
-import dagger.Component;
 
 /**
  * Created by muhammedsalihguler on 04.12.17.
@@ -14,7 +15,8 @@ import dagger.Component;
 
 public class TriviaDuelloApplication extends Application {
 
-    public static NetworkComponent component;
+    public static NetworkComponent networkComponent;
+    public static FirebaseComponent firebaseComponent;
 
     @Override
     public void onCreate() {
@@ -23,8 +25,12 @@ public class TriviaDuelloApplication extends Application {
     }
 
     private void initDagger() {
-        component = DaggerNetworkComponent.builder()
+        networkComponent = DaggerNetworkComponent.builder()
                 .networkModule(new NetworkModule())
+                .build();
+
+        firebaseComponent = DaggerFirebaseComponent.builder()
+                .firebaseModule(new FirebaseModule())
                 .build();
     }
 }

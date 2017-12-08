@@ -1,8 +1,10 @@
-package com.iamsalih.triviaduello.login;
+package com.iamsalih.triviaduello.onboarding;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.iamsalih.triviaduello.onboarding.login.LoginFragment;
 
 /**
  * Created by muhammedsalihguler on 22.11.17.

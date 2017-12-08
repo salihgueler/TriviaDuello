@@ -1,4 +1,4 @@
-package com.iamsalih.triviaduello.login;
+package com.iamsalih.triviaduello.onboarding;
 
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -15,7 +15,6 @@ import com.iamsalih.triviaduello.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by muhammedsalihguler on 22.11.17.
