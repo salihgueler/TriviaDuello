@@ -65,6 +65,7 @@ public class LoginFragment extends Fragment implements LoginView {
 
     @OnClick(R.id.login_button)
     public void startLoginWithFacebook() {
+        showProgressBar();
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
     }
 

@@ -32,6 +32,9 @@ public class QuestionsPresenter {
     @Inject
     FirebaseDatabase firebaseDatabase;
 
+    @Inject
+    FirebaseUser user;
+
     private DatabaseReference databaseReference;
     private ChildEventListener childEventListener;
     private String gameID;
@@ -122,6 +125,8 @@ public class QuestionsPresenter {
                                 point += 3;
                             }
                         }
+                    } else {
+                        wrongQuestions.add(question);
                     }
                 }
                 final DatabaseReference leaderBoard = FirebaseDatabase.getInstance().getReference("leaderBoard/"+userID);
@@ -183,7 +188,6 @@ public class QuestionsPresenter {
 
     private void updateAnsweredBy() {
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         List<Question> qList = questionList.getQuestionList();
         int position = getPositionOfCurrentQuestion(qList);
         qList.remove(position);
@@ -208,7 +212,7 @@ public class QuestionsPresenter {
 
         if (countDownTimer != null) {
             countDownTimer.cancel();
-        } else
+        } else {
             countDownTimer = new CountDownTimer(31000, 1000) {
                 @Override
                 public void onTick(long l) {
@@ -221,6 +225,8 @@ public class QuestionsPresenter {
                     generateQuestionView();
                 }
             };
+        }
+        countDownTimer.start();
     }
 
     public void initValuesFromIntent(Intent intent) {

@@ -64,8 +64,8 @@ public class MainScreenPresenter {
                 if (TextUtils.isEmpty(firstPlayer) || TextUtils.isEmpty(secondPlayer)) {
                     view.startGameView(response.body());
                 } else {
-                    view.startDuelGame(response.body());
                     assignCurrentGame(firstPlayer, secondPlayer, response.body());
+                    view.startDuelGame(response.body());
                 }
                 view.hideProgressBar();
             }

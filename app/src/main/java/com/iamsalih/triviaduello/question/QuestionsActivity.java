@@ -103,6 +103,6 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsVie
 
     @Override
     public void setTimerText(String timer) {
-        timerText.setText(String.valueOf(timer) + "s");
+        timerText.setText(timer);
     }
 }
