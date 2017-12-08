@@ -1,11 +1,15 @@
 package com.iamsalih.triviaduello.leaderboard;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -17,6 +21,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by muhammedsalihguler on 08.12.17.
@@ -26,9 +31,6 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
 
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
-
-    @BindView(R.id.share_button_holder)
-    LinearLayout shareButtonHolder;
 
     @BindView(R.id.leaderboard_list)
     RecyclerView leaderboardList;
@@ -44,16 +46,32 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.leaderboard_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_share:
+                presenter.shareItWithAnApplication();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void showProgressBar() {
         loadingIndicator.setVisibility(View.VISIBLE);
-        shareButtonHolder.setVisibility(View.GONE);
         leaderboardList.setVisibility(View.GONE);
     }
 
     @Override
     public void hideProgressBar() {
         loadingIndicator.setVisibility(View.GONE);
-        shareButtonHolder.setVisibility(View.VISIBLE);
         leaderboardList.setVisibility(View.VISIBLE);
     }
 

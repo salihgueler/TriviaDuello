@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="leaderboard_button_margin">4dp</dimen>
     <dimen name="onboarding_main_margin">16dp</dimen>
     <dimen name="leaderboard_item_size">100dp</dimen>
 </resources>
