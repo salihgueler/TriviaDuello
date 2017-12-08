@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Trigger;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -18,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.ReminderJobService;
 import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
@@ -55,6 +60,21 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
         setContentView(R.layout.main_screen_layout);
         ButterKnife.bind(this);
         presenter = new MainScreenPresenter(this);
+
+        resetJobDispatcher();
+    }
+
+    private void resetJobDispatcher() {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        dispatcher.cancelAll();
+        Job myJob = dispatcher.newJobBuilder()
+                .setService(ReminderJobService.class)
+                .setTag("reminder-job")
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(0, 259200))
+                .build();
+
+        dispatcher.mustSchedule(myJob);
     }
 
     @Override
