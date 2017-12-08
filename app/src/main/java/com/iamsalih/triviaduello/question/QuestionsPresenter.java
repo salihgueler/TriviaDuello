@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
+import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
 import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.Question;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
@@ -134,12 +135,16 @@ public class QuestionsPresenter {
                 leaderBoard.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Long pointFromServer = dataSnapshot.getValue(Long.class);
+                        LeaderBoardItem pointFromServer = dataSnapshot.getValue(LeaderBoardItem.class);
 
                         if (pointFromServer == null) {
-                            pointFromServer = 0l;
+                            pointFromServer = new LeaderBoardItem();
+                            pointFromServer.setUserName(user.getDisplayName());
+                            pointFromServer.setPoint(0);
                         }
-                        pointFromServer += finalPoint;
+                        int currentPoint = pointFromServer.getPoint();
+                        currentPoint += finalPoint;
+                        pointFromServer.setPoint(currentPoint);
                         leaderBoard.setValue(pointFromServer);
                     }
 

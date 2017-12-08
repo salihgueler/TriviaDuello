@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/leaderboard_button"
         android:icon="@drawable/ic_assessment_white"
         android:title="Leaderboard"
         app:showAsAction="always" />
     <item
+        android:id="@+id/settings_button"
         android:icon="@drawable/ic_settings_white"
         android:title="Settings"
         app:showAsAction="always" />

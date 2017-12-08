@@ -14,6 +14,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.iamsalih.triviaduello.leaderboard.LeaderboardActivity;
 import com.iamsalih.triviaduello.service.ReminderJobService;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
 import com.iamsalih.triviaduello.mainscreen.data.api.TriviaCall;
@@ -200,5 +201,10 @@ public class MainScreenPresenter {
             databaseReference.removeEventListener(childEventListener);
         }
         childEventListener = null;
+    }
+
+    public void startLeaderboardScreen() {
+        Intent intent = new Intent(view.getAppContext(), LeaderboardActivity.class);
+        view.getAppContext().startActivity(intent);
     }
 }

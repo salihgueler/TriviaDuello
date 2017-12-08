@@ -36,6 +36,8 @@ dependencies {
     // Support library
     implementation "com.android.support:appcompat-v7:${libs.supportLibraryVersion}"
     implementation "com.android.support.constraint:constraint-layout:${libs.constraintLayoutVersion}"
+    implementation "com.android.support:cardview-v7:${libs.supportLibraryVersion}"
+    implementation "com.android.support:recyclerview-v7:${libs.supportLibraryVersion}"
 
     // Butterknife
     implementation "com.jakewharton:butterknife:${libs.butterknife}"
