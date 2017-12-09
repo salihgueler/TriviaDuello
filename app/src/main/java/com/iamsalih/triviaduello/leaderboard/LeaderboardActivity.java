@@ -14,6 +14,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
 
@@ -35,6 +39,9 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
     @BindView(R.id.leaderboard_list)
     RecyclerView leaderboardList;
 
+    @BindView(R.id.adView)
+    AdView adView;
+
     private LeaderboardPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +50,9 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
         ButterKnife.bind(this);
         presenter = new LeaderboardPresenter(this);
         presenter.getLeaderboardPoints();
+        MobileAds.initialize(this, getString(R.string.admob_id));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
     }
 
     @Override
@@ -86,5 +96,8 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
         adapter.setLeaderBoardItems(leaderBoardItemList);
         leaderboardList.setLayoutManager(new LinearLayoutManager(this));
         leaderboardList.setAdapter(adapter);
+        Bundle bundle = new Bundle();
+        bundle.putString("leaderboard_screen", "results_view");
+        FirebaseAnalytics.getInstance(this).logEvent("trivia_duello", bundle);
     }
 }

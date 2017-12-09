@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.iamsalih.triviaduello.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +39,8 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsVie
     TextView timerText;
 
     private QuestionsPresenter presenter;
+    private FirebaseAnalytics firebaseAnalytics;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +49,11 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsVie
         presenter = new QuestionsPresenter(this);
         presenter.initValuesFromIntent(getIntent());
         presenter.addDatabaseListener();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("question_screen", "start_quiz");
+        firebaseAnalytics.logEvent("trivia_duello", bundle);
     }
 
     @Override
@@ -56,6 +65,11 @@ public class QuestionsActivity extends AppCompatActivity implements QuestionsVie
 
     @Override
     public void createResultScreen(int point) {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("question_screen", "result_received");
+        firebaseAnalytics.logEvent("trivia_duello", bundle);
+
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("You have " + point + " points.")
                 .setMessage(presenter.generateCorrectAnswers())

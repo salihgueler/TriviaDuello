@@ -271,4 +271,10 @@ public class MainScreenPresenter {
         Intent intent = new Intent(view.getAppContext(), SettingsActivity.class);
         view.getAppContext().startActivity(intent);
     }
+
+    public void cancelDuelMode() {
+        final DatabaseReference databaseGameReference = database.getReference("Open Games");
+        databaseGameReference.child(user.getUid()).removeValue();
+        view.hideProgressBar();
+    }
 }

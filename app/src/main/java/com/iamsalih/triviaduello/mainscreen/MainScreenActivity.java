@@ -4,11 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 import butterknife.BindView;
@@ -31,7 +38,14 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
 
+    @BindView(R.id.cancel_button)
+    Button cancelButton;
+
+    @BindView(R.id.adView)
+    AdView adView;
+
     private MainScreenPresenter presenter;
+    private FirebaseAnalytics firebaseAnalytics;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +54,11 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
         ButterKnife.bind(this);
         presenter = new MainScreenPresenter(this);
         presenter.resetJobDispatcher();
+        MobileAds.initialize(this, "ca-app-pub-9229514993517521~1418153022");
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+        adView.loadAd(adRequest);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
 
@@ -66,11 +85,22 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
         presenter.getQuestions(null, null);
+        Bundle bundle = new Bundle();
+        bundle.putString("main_screen", "click_start_practice_mode");
+        firebaseAnalytics.logEvent("trivia_duello", bundle);
     }
 
     @OnClick(R.id.duel_mode_button)
     public void startDuelMode() {
         presenter.startDuelProcess();
+        Bundle bundle = new Bundle();
+        bundle.putString("main_screen", "click_start_duel_mode");
+        firebaseAnalytics.logEvent("trivia_duello", bundle);
+    }
+
+    @OnClick(R.id.cancel_button)
+    public void cancelSearch() {
+        presenter.cancelDuelMode();
     }
 
     @Override
@@ -82,14 +112,18 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     public void showProgressBar() {
         practiceModeButton.setVisibility(View.GONE);
         duelModeButton.setVisibility(View.GONE);
+        adView.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgressBar() {
         practiceModeButton.setVisibility(View.VISIBLE);
         duelModeButton.setVisibility(View.VISIBLE);
+        adView.setVisibility(View.VISIBLE);
         loadingIndicator.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
     }
 
     @Override

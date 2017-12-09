@@ -50,6 +50,7 @@ dependencies {
     implementation "com.google.firebase:firebase-core:${libs.firebase}"
     implementation "com.google.firebase:firebase-auth:${libs.firebase}"
     implementation "com.google.firebase:firebase-database:${libs.firebase}"
+    implementation "com.google.firebase:firebase-ads:${libs.firebase}"
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // Facebook SDK
