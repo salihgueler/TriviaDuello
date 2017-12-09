@@ -2,6 +2,7 @@ package com.iamsalih.triviaduello.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.settings.profile.ProfileActivity;
 
 import java.util.Arrays;
 
@@ -98,6 +100,7 @@ public class SettingsPresenter {
     }
 
     public void showProfileFragment() {
-
+        Intent intent = new Intent(settingsView.getAppContext(), ProfileActivity.class);
+        settingsView.getAppContext().startActivity(intent);
     }
 }

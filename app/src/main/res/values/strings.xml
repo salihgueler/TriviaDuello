@@ -6,4 +6,10 @@
     <string name="onboarding_time_text">Race against time to answer the questions.</string>
     <string name="onboarding_leaderboard_text">Make your way to the top of weekly Leaderboard.</string>
 
+    <string name="chooser_title">Sharing Option</string>
+    <string name="dialog_message">Do you want to log out?</string>
+    <string name="logout_dialog_title">Log out!</string>
+    <string name="category_dialog_title">Categories</string>
+    <string name="alert_dialog_ok">Ok</string>
+    <string name="alert_dialog_cancel">Cancel</string>
 </resources>

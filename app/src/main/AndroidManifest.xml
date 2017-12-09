@@ -31,7 +31,8 @@
             android:launchMode="singleTop"/>
         <activity android:name=".settings.SettingsActivity"
             android:launchMode="singleTop"/>
-
+        <activity android:name=".settings.profile.ProfileActivity"
+            android:launchMode="singleTop"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
