@@ -1,6 +1,8 @@
 package com.iamsalih.triviaduello.mainscreen;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -14,6 +16,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 import com.iamsalih.triviaduello.leaderboard.LeaderboardActivity;
 import com.iamsalih.triviaduello.service.ReminderJobService;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
@@ -21,7 +24,10 @@ import com.iamsalih.triviaduello.mainscreen.data.api.TriviaCall;
 import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
+import com.iamsalih.triviaduello.settings.SettingsActivity;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -59,7 +65,7 @@ public class MainScreenPresenter {
 
         view.showProgressBar();
 
-        triviaCall.getQuestions(10, "multiple").enqueue(new Callback<QuestionList>() {
+        triviaCall.getQuestions(10, "multiple", getCategories()).enqueue(new Callback<QuestionList>() {
             @Override
             public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
                 if (TextUtils.isEmpty(firstPlayer) || TextUtils.isEmpty(secondPlayer)) {
@@ -77,6 +83,59 @@ public class MainScreenPresenter {
                 view.hideProgressBar();
             }
         });
+    }
+
+    private Map<String, String> getCategories() {
+        Map<String, String> categories = new HashMap<>();
+        SharedPreferences preferences = view.getAppContext().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
+        boolean[] savedCategory = new Gson().fromJson(preferences.getString("selectedCategories", null), boolean[].class);
+        if (savedCategory != null) {
+            if (savedCategory[0] == false) {
+                arrangeCategories(categories, savedCategory);
+            }
+        }
+        return categories;
+    }
+
+    private void arrangeCategories(Map<String, String> categories, boolean[] savedCategory) {
+        for (int i = 1; i < savedCategory.length; i++) {
+            if (savedCategory[i] == false) {
+                continue;
+            }
+            switch (i) {
+                case 1:
+                    categories.put("category", "9");
+                    break;
+                case 2:
+                    categories.put("category", "10");
+                    categories.put("category", "11");
+                    categories.put("category", "12");
+                    categories.put("category", "13");
+                    categories.put("category", "14");
+                    categories.put("category", "15");
+                    categories.put("category", "16");
+                    categories.put("category", "26");
+                    categories.put("category", "29");
+                    categories.put("category", "31");
+                    categories.put("category", "32");
+                    break;
+                case 3:
+                    categories.put("category", "17");
+                    categories.put("category", "18");
+                    categories.put("category", "19");
+                    categories.put("category", "30");
+                    break;
+                case 4:
+                    categories.put("category", "21");
+                    break;
+                case 5:
+                    categories.put("category", "23");
+                    break;
+                case 6:
+                    categories.put("category", "25");
+                    break;
+            }
+        }
     }
 
     private void assignCurrentGame(String firstPlayer, String secondPlayer, QuestionList questionList) {
@@ -205,6 +264,11 @@ public class MainScreenPresenter {
 
     public void startLeaderboardScreen() {
         Intent intent = new Intent(view.getAppContext(), LeaderboardActivity.class);
+        view.getAppContext().startActivity(intent);
+    }
+
+    public void startSettingsScreen() {
+        Intent intent = new Intent(view.getAppContext(), SettingsActivity.class);
         view.getAppContext().startActivity(intent);
     }
 }

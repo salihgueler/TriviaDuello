@@ -1,0 +1,17 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header
+        android:id="@+id/profile_button"
+        android:summary="Edit your profile information."
+        android:title="Profile" />
+
+    <header
+        android:id="@+id/category_button"
+        android:summary="Change categories according to your preference."
+        android:title="Categories">
+    </header>
+
+    <header
+        android:id="@+id/log_out_button"
+        android:title="Log out"/>
+</preference-headers>

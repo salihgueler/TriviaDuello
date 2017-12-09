@@ -17,4 +17,21 @@
         <item>@string/onboarding_time_text</item>
         <item>@string/onboarding_leaderboard_text</item>
     </array>
+
+    <array name="question_categories">
+        <item>@string/category_all</item>
+        <item>@string/category_general_knowledge</item>
+        <item>@string/category_entertainment</item>
+        <item>@string/category_science</item>
+        <item>@string/category_sports</item>
+        <item>@string/category_history</item>
+        <item>@string/category_art</item>
+    </array>
+    <string name="category_all">All categories</string>
+    <string name="category_general_knowledge">General Knowledge</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_science">Science</string>
+    <string name="category_sports">Sports</string>
+    <string name="category_history">History</string>
+    <string name="category_art">Art</string>
 </resources>

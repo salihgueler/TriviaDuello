@@ -57,6 +57,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
                 presenter.startLeaderboardScreen();
                 break;
             case R.id.settings_button:
+                presenter.startSettingsScreen();
                 break;
         }
         return super.onOptionsItemSelected(item);

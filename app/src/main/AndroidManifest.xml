@@ -14,7 +14,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".onboarding.OnboardingActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,9 +23,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".mainscreen.MainScreenActivity"/>
-        <activity android:name=".question.QuestionsActivity"/>
-        <activity android:name=".leaderboard.LeaderboardActivity"/>
+        <activity android:name=".mainscreen.MainScreenActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".question.QuestionsActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".leaderboard.LeaderboardActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".settings.SettingsActivity"
+            android:launchMode="singleTop"/>
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
