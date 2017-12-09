@@ -105,7 +105,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public void startDuelGame(QuestionList questionList) {
-        startGameView(questionList);
+        startGameView(questionList, true);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     }
 
     @Override
-    public void startGameView(QuestionList questionList) {
-        presenter.startGameView(questionList);
+    public void startGameView(QuestionList questionList, boolean isDuelMode) {
+        presenter.startGameView(questionList, isDuelMode);
     }
 }

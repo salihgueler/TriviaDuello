@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
 import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
-import com.iamsalih.triviaduello.mainscreen.data.model.Game;
 import com.iamsalih.triviaduello.mainscreen.data.model.Question;
 import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 
@@ -45,6 +44,7 @@ public class QuestionsPresenter {
     private List<Question> wrongQuestions = new ArrayList<>();
     private CountDownTimer countDownTimer;
     private QuestionList questionList;
+    private boolean isDuelMode;
 
     public QuestionsPresenter(QuestionsView questionsView) {
 
@@ -103,11 +103,31 @@ public class QuestionsPresenter {
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
-            calculatePoint();
+            if (isDuelMode) {
+                calculateDuelPoint();
+            } else {
+                questionsView.createResultScreen(calculatePracticePoint());
+            }
         }
     }
 
-    private void calculatePoint() {
+    private int calculatePracticePoint() {
+        int point = 0;
+        for (Question question: questionList.getQuestionList()) {
+            if (questionAnsweredCorrectly(question)) {
+                if (question.getDifficulty().trim().equalsIgnoreCase("easy")){
+                    point += 1;
+                } else if (question.getDifficulty().trim().equalsIgnoreCase("medium")){
+                    point += 2;
+                } else if (question.getDifficulty().trim().equalsIgnoreCase("hard")){
+                    point += 3;
+                }
+            }
+        }
+        return point;
+    }
+
+    private void calculateDuelPoint() {
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -188,7 +208,11 @@ public class QuestionsPresenter {
             wrongQuestions.add(currentQuestion);
         }
 
-        updateAnsweredBy();
+        if (isDuelMode) {
+            updateAnsweredBy();
+        } else {
+            generateQuestionView();
+        }
     }
 
     private void updateAnsweredBy() {
@@ -240,6 +264,7 @@ public class QuestionsPresenter {
         }
         questionList = intent.getParcelableExtra("list");
         gameID = intent.getStringExtra("gameID");
+        isDuelMode = intent.getBooleanExtra("isDuelMode", false);
         questions.addAll(questionList.getQuestionList());
         generateQuestionView();
     }

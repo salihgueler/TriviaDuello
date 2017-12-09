@@ -9,6 +9,6 @@ import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
 
 public interface MainScreenView extends BaseView{
 
-    void startGameView(QuestionList questionList);
+    void startGameView(QuestionList questionList, boolean isDuelMode);
     void startDuelGame(QuestionList questionList);
 }

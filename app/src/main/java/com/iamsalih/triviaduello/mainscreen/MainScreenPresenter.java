@@ -69,7 +69,7 @@ public class MainScreenPresenter {
             @Override
             public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
                 if (TextUtils.isEmpty(firstPlayer) || TextUtils.isEmpty(secondPlayer)) {
-                    view.startGameView(response.body());
+                    view.startGameView(response.body(), false);
                 } else {
                     assignCurrentGame(firstPlayer, secondPlayer, response.body());
                     view.startDuelGame(response.body());
@@ -221,7 +221,7 @@ public class MainScreenPresenter {
                     if (!currentGame.isActiveGame()) {
                         currentGame.setActiveGame(true);
                         databaseReference.child(currentGame.getGameId()).setValue(currentGame);
-                        view.startGameView(currentGame.getQuestionList());
+                        view.startGameView(currentGame.getQuestionList(), true);
                     } else {
                         currentGame = null;
                     }
@@ -250,10 +250,11 @@ public class MainScreenPresenter {
         };
     }
 
-    public void startGameView(QuestionList questionList) {
+    public void startGameView(QuestionList questionList, boolean isDuelMode) {
         Intent intent = new Intent(view.getAppContext(), QuestionsActivity.class);
         intent.putExtra("list", questionList);
         intent.putExtra("gameID", currentGame == null ? "" : currentGame.getGameId());
+        intent.putExtra("isDuelMode", isDuelMode);
         view.getAppContext().startActivity(intent);
         currentGame = null;
         if (childEventListener != null) {
