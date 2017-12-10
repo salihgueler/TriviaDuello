@@ -19,7 +19,7 @@ import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionE
 public class QuestionDbHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "FeedReader.db";
+    private static final String DATABASE_NAME = "TriviaDuello.db";
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + " INTEGER PRIMARY KEY, " +

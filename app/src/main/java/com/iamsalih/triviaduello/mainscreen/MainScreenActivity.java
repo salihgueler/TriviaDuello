@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionE
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_WRONG_ANSWER;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.TABLE_NAME;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry._ID;
+import static com.iamsalih.triviaduello.data.database.QuestionProvider.PROVIDER_NAME;
 
 /**
  * Created by muhammedsalihguler on 25.11.17.
@@ -116,8 +118,6 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
         showProgressBar();
         List<Question> questions = new ArrayList<>();
-        QuestionDbHelper helper = new QuestionDbHelper(this);
-        SQLiteDatabase database = helper.getReadableDatabase();
 
         String[] projection = {
                 _ID,
@@ -128,9 +128,8 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
                 QUESTION_DIFFICULTY
         };
 
-        Cursor cursor = database.query(TABLE_NAME + " ORDER BY RANDOM() LIMIT 10",
+        Cursor cursor = getContentResolver().query(Uri.parse("content://" + PROVIDER_NAME),
                 projection,
-                null,
                 null,
                 null,
                 null,

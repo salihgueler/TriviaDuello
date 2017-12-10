@@ -57,6 +57,9 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
             </intent-filter>
         </service>
+
+        <provider android:name=".data.database.QuestionProvider"
+            android:authorities="com.iamsalih.triviaduello.data.database.QuestionProvider"/>
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -46,6 +47,7 @@ import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionE
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_TEXT;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_WRONG_ANSWER;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.TABLE_NAME;
+import static com.iamsalih.triviaduello.data.database.QuestionProvider.PROVIDER_NAME;
 
 /**
  * Created by muhammedsalihguler on 04.12.17.
@@ -100,9 +102,6 @@ public class MainScreenPresenter {
 
     private void saveValuesToDatabase(QuestionList questionList) {
 
-        QuestionDbHelper helper = new QuestionDbHelper(view.getAppContext());
-        SQLiteDatabase database = helper.getWritableDatabase();
-
         for (Question question : questionList.getQuestionList()) {
             ContentValues values = new ContentValues();
             values.put(QUESTION_TEXT, question.getQuestion());
@@ -111,7 +110,7 @@ public class MainScreenPresenter {
             values.put(QUESTION_DIFFICULTY, question.getDifficulty());
             String wrongAnswers = new Gson().toJson(question.getIncorrectOptions());
             values.put(QUESTION_WRONG_ANSWER, wrongAnswers);
-            database.insert(TABLE_NAME, null, values);
+            view.getAppContext().getContentResolver().insert(Uri.parse("content://" + PROVIDER_NAME), values);
         }
     }
 
