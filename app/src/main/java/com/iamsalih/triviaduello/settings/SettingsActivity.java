@@ -1,23 +1,17 @@
 package com.iamsalih.triviaduello.settings;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.onboarding.OnboardingActivity;
-import com.iamsalih.triviaduello.settings.helper.AppCompatPreferenceActivity;
+import com.iamsalih.triviaduello.helper.AppCompatPreferenceActivity;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

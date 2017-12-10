@@ -1,7 +1,7 @@
 package com.iamsalih.triviaduello.leaderboard;
 
 import com.iamsalih.triviaduello.BaseView;
-import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
+import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.iamsalih.triviaduello.mainscreen.data.model;
+package com.iamsalih.triviaduello.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

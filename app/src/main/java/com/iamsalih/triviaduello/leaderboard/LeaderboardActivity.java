@@ -1,8 +1,6 @@
 package com.iamsalih.triviaduello.leaderboard;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.ads.AdRequest;
@@ -19,13 +16,12 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.iamsalih.triviaduello.R;
-import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
+import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by muhammedsalihguler on 08.12.17.

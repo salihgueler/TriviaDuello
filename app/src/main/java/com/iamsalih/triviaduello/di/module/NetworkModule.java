@@ -2,7 +2,7 @@ package com.iamsalih.triviaduello.di.module;
 
 import android.support.annotation.NonNull;
 
-import com.iamsalih.triviaduello.mainscreen.data.api.TriviaCall;
+import com.iamsalih.triviaduello.api.TriviaCall;
 
 import dagger.Module;
 import dagger.Provides;

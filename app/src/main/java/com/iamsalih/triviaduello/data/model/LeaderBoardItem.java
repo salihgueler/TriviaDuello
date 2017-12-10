@@ -1,4 +1,4 @@
-package com.iamsalih.triviaduello.leaderboard.data.model;
+package com.iamsalih.triviaduello.data.model;
 
 /**
  * Created by muhammedsalihguler on 08.12.17.

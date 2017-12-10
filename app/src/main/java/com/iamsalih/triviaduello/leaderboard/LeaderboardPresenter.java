@@ -10,7 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
-import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
+import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 
 import java.util.ArrayList;
 import java.util.Collections;

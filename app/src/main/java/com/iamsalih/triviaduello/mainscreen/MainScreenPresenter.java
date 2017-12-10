@@ -1,8 +1,10 @@
 package com.iamsalih.triviaduello.mainscreen;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -17,12 +19,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+import com.iamsalih.triviaduello.api.TriviaCall;
+import com.iamsalih.triviaduello.data.database.QuestionDbHelper;
+import com.iamsalih.triviaduello.data.model.Question;
 import com.iamsalih.triviaduello.leaderboard.LeaderboardActivity;
 import com.iamsalih.triviaduello.service.ReminderJobService;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
-import com.iamsalih.triviaduello.mainscreen.data.api.TriviaCall;
-import com.iamsalih.triviaduello.mainscreen.data.model.Game;
-import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
+import com.iamsalih.triviaduello.data.model.Game;
+import com.iamsalih.triviaduello.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
 import com.iamsalih.triviaduello.settings.SettingsActivity;
 
@@ -35,6 +39,13 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_CATEGORY;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_CORRECT_ANSWER;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_DIFFICULTY;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_TEXT;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_WRONG_ANSWER;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.TABLE_NAME;
 
 /**
  * Created by muhammedsalihguler on 04.12.17.
@@ -68,6 +79,8 @@ public class MainScreenPresenter {
         triviaCall.getQuestions(10, "multiple", getCategories()).enqueue(new Callback<QuestionList>() {
             @Override
             public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
+
+                saveValuesToDatabase(response.body());
                 if (TextUtils.isEmpty(firstPlayer) || TextUtils.isEmpty(secondPlayer)) {
                     view.startGameView(response.body(), false);
                 } else {
@@ -83,6 +96,23 @@ public class MainScreenPresenter {
                 view.hideProgressBar();
             }
         });
+    }
+
+    private void saveValuesToDatabase(QuestionList questionList) {
+
+        QuestionDbHelper helper = new QuestionDbHelper(view.getAppContext());
+        SQLiteDatabase database = helper.getWritableDatabase();
+
+        for (Question question : questionList.getQuestionList()) {
+            ContentValues values = new ContentValues();
+            values.put(QUESTION_TEXT, question.getQuestion());
+            values.put(QUESTION_CATEGORY, question.getCategory());
+            values.put(QUESTION_CORRECT_ANSWER, question.getCorrectAnswer());
+            values.put(QUESTION_DIFFICULTY, question.getDifficulty());
+            String wrongAnswers = new Gson().toJson(question.getIncorrectOptions());
+            values.put(QUESTION_WRONG_ANSWER, wrongAnswers);
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     private Map<String, String> getCategories() {

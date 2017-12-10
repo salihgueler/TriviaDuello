@@ -1,6 +1,6 @@
-package com.iamsalih.triviaduello.mainscreen.data.api;
+package com.iamsalih.triviaduello.api;
 
-import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
+import com.iamsalih.triviaduello.data.model.QuestionList;
 
 import java.util.Map;
 

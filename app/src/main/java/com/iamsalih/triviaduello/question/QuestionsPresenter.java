@@ -13,9 +13,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
-import com.iamsalih.triviaduello.leaderboard.data.model.LeaderBoardItem;
-import com.iamsalih.triviaduello.mainscreen.data.model.Question;
-import com.iamsalih.triviaduello.mainscreen.data.model.QuestionList;
+import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
+import com.iamsalih.triviaduello.data.model.Question;
+import com.iamsalih.triviaduello.data.model.QuestionList;
 
 import java.util.ArrayList;
 import java.util.Collections;
