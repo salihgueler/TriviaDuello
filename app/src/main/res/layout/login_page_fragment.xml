@@ -19,6 +19,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/google_plus_login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/onboarding_main_margin"
+        android:background="@drawable/google_plus_button_selector"
+        android:fontFamily="sans-serif-medium"
+        android:text="Log in with Google+"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/facebook_login_button" />
+
     <ProgressBar
         android:id="@+id/loading_indicator"
         android:layout_width="wrap_content"

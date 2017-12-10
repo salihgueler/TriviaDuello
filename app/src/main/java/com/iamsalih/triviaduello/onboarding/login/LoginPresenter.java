@@ -44,11 +44,13 @@ public class LoginPresenter {
 
             @Override
             public void onCancel() {
+                loginView.hideProgressBar();
                 Timber.v("onCancel()");
             }
 
             @Override
             public void onError(FacebookException exception) {
+                loginView.hideProgressBar();
                 Timber.e("onError(): " + exception.toString());
             }
         });
@@ -58,6 +60,10 @@ public class LoginPresenter {
     private void signInWithFacebookLoginResultToken(AccessToken accessToken) {
 
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        logInWithCredential(credential);
+    }
+
+    public void logInWithCredential(AuthCredential credential) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
