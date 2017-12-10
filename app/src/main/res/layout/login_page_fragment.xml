@@ -6,7 +6,7 @@
     android:background="@color/colorPrimary">
 
     <Button
-        android:id="@+id/login_button"
+        android:id="@+id/facebook_login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/onboarding_main_margin"

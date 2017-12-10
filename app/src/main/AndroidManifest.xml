@@ -57,7 +57,21 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
             </intent-filter>
         </service>
+        <service
+            android:name=".widget.LeaderboardWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <receiver
+            android:icon="@mipmap/ic_launcher"
+            android:label="Trivia Duello Widget"
+            android:name=".widget.LeaderboardWidgetProvider" >
+            <intent-filter >
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
 
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/leaderboard_widget_info" />
+        </receiver>
         <provider android:name=".data.database.QuestionProvider"
             android:authorities="com.iamsalih.triviaduello.data.database.QuestionProvider"/>
     </application>

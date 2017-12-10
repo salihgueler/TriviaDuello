@@ -28,7 +28,7 @@ import butterknife.OnClick;
 
 public class LoginFragment extends Fragment implements LoginView {
 
-    @BindView(R.id.login_button)
+    @BindView(R.id.facebook_login_button)
     Button loginButton;
 
     @BindView(R.id.loading_indicator)
@@ -63,7 +63,7 @@ public class LoginFragment extends Fragment implements LoginView {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    @OnClick(R.id.login_button)
+    @OnClick(R.id.facebook_login_button)
     public void startLoginWithFacebook() {
         showProgressBar();
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
