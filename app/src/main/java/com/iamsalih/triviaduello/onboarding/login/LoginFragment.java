@@ -44,6 +44,9 @@ public class LoginFragment extends Fragment implements LoginView {
     @BindView(R.id.google_plus_login_button)
     Button googlePlusLoginButton;
 
+    @BindView(R.id.anonymous_login_button)
+    Button anonymousLoginButton;
+
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
 
@@ -113,11 +116,18 @@ public class LoginFragment extends Fragment implements LoginView {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    @OnClick(R.id.anonymous_login_button)
+    public void startLoginAnonymously() {
+        showProgressBar();
+        presenter.loginAnonymously();
+    }
+
     @Override
     public void showProgressBar() {
         loadingIndicator.setVisibility(View.VISIBLE);
         loginButton.setVisibility(View.GONE);
         googlePlusLoginButton.setVisibility(View.GONE);
+        anonymousLoginButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -125,6 +135,7 @@ public class LoginFragment extends Fragment implements LoginView {
         loadingIndicator.setVisibility(View.GONE);
         loginButton.setVisibility(View.VISIBLE);
         googlePlusLoginButton.setVisibility(View.VISIBLE);
+        anonymousLoginButton.setVisibility(View.VISIBLE);
     }
 
     @Override

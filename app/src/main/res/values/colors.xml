@@ -10,4 +10,5 @@
     <color name="colorDivider">#BDBDBD</color>
     <color name="googlePlusRegular">#dd4b39</color>
     <color name="googlePlusDark">#a40f11</color>
+    <color name="grey">#cccccc</color>
 </resources>

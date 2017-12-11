@@ -81,4 +81,23 @@ public class LoginPresenter {
             }
         });
     }
+
+    public void loginAnonymously() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
+        firebaseAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(loginView.getAppContext(), "You are logged in", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(loginView.getAppContext(), MainScreenActivity.class);
+                    loginView.getAppContext().startActivity(intent);
+                    ((Activity) loginView.getAppContext()).finish();
+                } else {
+                    Toast.makeText(loginView.getAppContext(), "You are not logged in", Toast.LENGTH_SHORT).show();
+                    loginView.hideProgressBar();
+                }
+            }
+        });
+    }
 }

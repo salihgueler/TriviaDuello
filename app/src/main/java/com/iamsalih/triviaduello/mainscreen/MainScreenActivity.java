@@ -215,7 +215,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public Context getAppContext() {
-        return getApplicationContext();
+        return this;
     }
 
     @Override
