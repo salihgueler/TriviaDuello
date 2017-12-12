@@ -23,7 +23,8 @@ buildscript {
             timber                 : "4.6.0",
             retrofit               : "2.3.0",
             gson                   : "2.8.2",
-            dagger                 : "2.13"
+            dagger                 : "2.13",
+            glide                  : "4.4.0"
     ]
     repositories {
         google()

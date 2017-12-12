@@ -47,31 +47,36 @@ dependencies {
     implementation "me.relex:circleindicator:${libs.viewPagerIndicator}"
 
     // Firebase
-    implementation "com.google.firebase:firebase-core:${libs.firebase}"
-    implementation "com.google.firebase:firebase-auth:${libs.firebase}"
-    implementation "com.google.firebase:firebase-database:${libs.firebase}"
-    implementation "com.google.firebase:firebase-ads:${libs.firebase}"
+    implementation "com.google.firebase:firebase-core:$libs.firebase"
+    implementation "com.google.firebase:firebase-auth:$libs.firebase"
+    implementation "com.google.firebase:firebase-database:$libs.firebase"
+    implementation "com.google.firebase:firebase-storage:$libs.firebase"
+    implementation "com.google.firebase:firebase-ads:$libs.firebase"
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // Facebook SDK
-    implementation "com.facebook.android:facebook-login:${libs.facebook}"
+    implementation "com.facebook.android:facebook-login:$libs.facebook"
 
     // Google+
-    implementation "com.google.android.gms:play-services-auth:${libs.firebase}"
+    implementation "com.google.android.gms:play-services-auth:$libs.firebase"
 
     // Timber
-    implementation "com.jakewharton.timber:timber:${libs.timber}"
+    implementation "com.jakewharton.timber:timber:$libs.timber"
 
     // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:${libs.retrofit}"
-    implementation "com.squareup.retrofit2:converter-gson:${libs.retrofit}"
+    implementation "com.squareup.retrofit2:retrofit:$libs.retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$libs.retrofit"
 
     // Gson
-    implementation "com.google.code.gson:gson:${libs.gson}"
+    implementation "com.google.code.gson:gson:$libs.gson"
 
     // Dagger
-    implementation "com.google.dagger:dagger:${libs.dagger}"
-    annotationProcessor "com.google.dagger:dagger-compiler:${libs.dagger}"
+    implementation "com.google.dagger:dagger:$libs.dagger"
+    annotationProcessor "com.google.dagger:dagger-compiler:$libs.dagger"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$libs.glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$libs.glide"
 }
 
 buildscript {
