@@ -10,23 +10,33 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.iamsalih.triviaduello.AppConstants;
+import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.mainscreen.MainScreenActivity;
 
 import timber.log.Timber;
 
 /**
- * Created by muhammedsalihguler on 08.12.17.
+ * Presenter for login operations.
  */
 
 public class LoginPresenter {
 
     private LoginView loginView;
+
+    private GoogleSignInClient mGoogleSignInClient;
 
     public LoginPresenter(LoginView loginView) {
 
@@ -70,34 +80,81 @@ public class LoginPresenter {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(loginView.getAppContext(), "You are logged in", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(loginView.getAppContext(), MainScreenActivity.class);
                     loginView.getAppContext().startActivity(intent);
                     ((Activity) loginView.getAppContext()).finish();
                 } else {
-                    Toast.makeText(loginView.getAppContext(), "You are not logged in", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(loginView.getAppContext(), loginView.getAppContext().getString(R.string.login_failed_message), Toast.LENGTH_SHORT).show();
                     loginView.hideProgressBar();
                 }
             }
         });
     }
 
-    public void loginAnonymously() {
+    public void initGoogleSingInClient() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(loginView.getAppContext().getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(loginView.getAppContext(), gso);
+    }
+
+    public void signInWithGoogle(Intent data) {
+        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+        try {
+            // Google Sign In was successful, authenticate with Firebase
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+            logInWithCredential(credential);
+        } catch (ApiException e) {
+            // Google Sign In failed, update UI appropriately
+            Timber.w("Google sign in failed\n" + e);
+            loginView.hideProgressBar();
+        }
+    }
+
+    public void startLoginProcessWithEmailandPassword(final String email, final String password) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-        firebaseAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(loginView.getAppContext(), "You are logged in", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(loginView.getAppContext(), MainScreenActivity.class);
                     loginView.getAppContext().startActivity(intent);
                     ((Activity) loginView.getAppContext()).finish();
                 } else {
-                    Toast.makeText(loginView.getAppContext(), "You are not logged in", Toast.LENGTH_SHORT).show();
+                    Timber.w("createUserWithEmail:failure\n" + task.getException());
+                    if (task.getException().toString().contains("FirebaseAuthUserCollisionException")) {
+                        loginWithEmailAndPassword(email, password);
+                    } else {
+                        Toast.makeText(loginView.getAppContext(), loginView.getAppContext().getString(R.string.login_failed_message), Toast.LENGTH_SHORT).show();
+                        loginView.hideProgressBar();
+                    }
+                }
+            }
+        });
+    }
+
+    private void loginWithEmailAndPassword(final String email, final String password) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Intent intent = new Intent(loginView.getAppContext(), MainScreenActivity.class);
+                    loginView.getAppContext().startActivity(intent);
+                    ((Activity) loginView.getAppContext()).finish();
+                } else {
+                    Toast.makeText(loginView.getAppContext(), loginView.getAppContext().getString(R.string.login_failed_message), Toast.LENGTH_SHORT).show();
                     loginView.hideProgressBar();
                 }
             }
         });
+    }
+
+    public void startLoginIntent(LoginFragment loginFragment) {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        loginFragment.startActivityForResult(signInIntent, AppConstants.RC_SIGN_IN);
     }
 }

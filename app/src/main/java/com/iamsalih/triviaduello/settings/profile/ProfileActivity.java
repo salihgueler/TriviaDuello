@@ -26,13 +26,12 @@ import butterknife.OnClick;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private static final int RC_PHOTO_PICKER = 1;
     @BindView(R.id.profile_picture)
     ImageView profilePicture;
-
     @BindView(R.id.delete_account_button)
     Button deleteAccount;
 
+    private static final int RC_PHOTO_PICKER = 1;
     private StorageReference mChatPhotosStorageReference;
     private FirebaseStorage mFirebaseStorage;
 

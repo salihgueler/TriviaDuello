@@ -10,4 +10,6 @@ import com.iamsalih.triviaduello.BaseView;
 public interface LoginView extends BaseView {
 
     CallbackManager getCallbackManager();
+    void showLoginView();
+    void hideLoginView();
 }

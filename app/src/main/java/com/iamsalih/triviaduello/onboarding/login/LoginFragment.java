@@ -5,25 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.GoogleAuthCredential;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
 
 import java.util.Arrays;
@@ -33,7 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * Created by muhammedsalihguler on 23.11.17.
+ *  Fragment for login operations.
  */
 
 public class LoginFragment extends Fragment implements LoginView {
@@ -44,19 +39,27 @@ public class LoginFragment extends Fragment implements LoginView {
     @BindView(R.id.google_plus_login_button)
     Button googlePlusLoginButton;
 
-    @BindView(R.id.anonymous_login_button)
-    Button anonymousLoginButton;
+    @BindView(R.id.login_with_email_and_password_button)
+    Button loginWithEmailandPassword;
 
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
+
+    @BindView(R.id.email_text)
+    TextInputEditText emailText;
+
+    @BindView(R.id.password_name_text)
+    TextInputEditText passwordText;
+
+    @BindView(R.id.login_layout_holder)
+    ConstraintLayout loginLayoutHolder;
 
     private CallbackManager callbackManager;
 
     private LoginPresenter presenter;
 
-    private GoogleSignInClient mGoogleSignInClient;
-
-    private static final int RC_SIGN_IN = 9001;
+    private boolean isLoggingIn = false;
+    private boolean isEmailPageOpen = false;
 
     public static LoginFragment newInstance() {
 
@@ -73,31 +76,38 @@ public class LoginFragment extends Fragment implements LoginView {
         ButterKnife.bind(this, rootView);
         callbackManager = CallbackManager.Factory.create();
         presenter = new LoginPresenter(this);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
-
+        presenter.initGoogleSingInClient();
         presenter.registerAuthenticationCallback();
         return rootView;
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(AppConstants.IS_LOGGING_IN, isLoggingIn);
+        outState.putBoolean(AppConstants.IS_EMAIL_PAGE_OPEN, isEmailPageOpen);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            isLoggingIn = savedInstanceState.getBoolean(AppConstants.IS_LOGGING_IN);
+            isEmailPageOpen = savedInstanceState.getBoolean(AppConstants.IS_EMAIL_PAGE_OPEN);
+            if (isEmailPageOpen) {
+                showLoginView();
+            }
+            if (isLoggingIn) {
+                showProgressBar();
+            }
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                presenter.logInWithCredential(credential);
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w("Fail", "Google sign in failed", e);
-                hideProgressBar();
-            }
+        if (requestCode == AppConstants.RC_SIGN_IN) {
+            presenter.signInWithGoogle(data);
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
@@ -106,36 +116,53 @@ public class LoginFragment extends Fragment implements LoginView {
     @OnClick(R.id.facebook_login_button)
     public void startLoginWithFacebook() {
         showProgressBar();
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(AppConstants.FACEBOOK_DEMANDED_INFORMATION));
     }
 
     @OnClick(R.id.google_plus_login_button)
     public void startLoginWithGooglePlus() {
         showProgressBar();
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        presenter.startLoginIntent(this);
     }
 
-    @OnClick(R.id.anonymous_login_button)
-    public void startLoginAnonymously() {
-        showProgressBar();
-        presenter.loginAnonymously();
+    @OnClick(R.id.login_with_email_and_password_button)
+    public void startLoginWithEmailAndPassword() {
+        showLoginView();
+    }
+
+    @OnClick(R.id.cancel_login_with_email)
+    public void cancelLoginWithEmailAndPassword() {
+        hideLoginView();
+    }
+
+    @OnClick(R.id.start_login_with_email_and_password)
+    public void startLoginProcess() {
+        if (TextUtils.isEmpty(emailText.getText().toString()) ||
+                TextUtils.isEmpty(passwordText.getText().toString())) {
+            Toast.makeText(getActivity(), getString(R.string.empty_field_error), Toast.LENGTH_SHORT).show();
+        } else {
+            showProgressBar();
+            presenter.startLoginProcessWithEmailandPassword(emailText.getText().toString(), passwordText.getText().toString());
+        }
     }
 
     @Override
     public void showProgressBar() {
+        isLoggingIn = true;
         loadingIndicator.setVisibility(View.VISIBLE);
         loginButton.setVisibility(View.GONE);
         googlePlusLoginButton.setVisibility(View.GONE);
-        anonymousLoginButton.setVisibility(View.GONE);
+        loginWithEmailandPassword.setVisibility(View.GONE);
+        loginLayoutHolder.setVisibility(View.GONE);
     }
 
     @Override
     public void hideProgressBar() {
+        isLoggingIn = false;
         loadingIndicator.setVisibility(View.GONE);
         loginButton.setVisibility(View.VISIBLE);
         googlePlusLoginButton.setVisibility(View.VISIBLE);
-        anonymousLoginButton.setVisibility(View.VISIBLE);
+        loginWithEmailandPassword.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -146,5 +173,27 @@ public class LoginFragment extends Fragment implements LoginView {
     @Override
     public CallbackManager getCallbackManager() {
         return callbackManager;
+    }
+
+    @Override
+    public void showLoginView() {
+        isEmailPageOpen = true;
+        loadingIndicator.setVisibility(View.GONE);
+        loginButton.setVisibility(View.GONE);
+        googlePlusLoginButton.setVisibility(View.GONE);
+        loginWithEmailandPassword.setVisibility(View.GONE);
+        loginLayoutHolder.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoginView() {
+        isEmailPageOpen = false;
+        loadingIndicator.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.VISIBLE);
+        googlePlusLoginButton.setVisibility(View.VISIBLE);
+        loginWithEmailandPassword.setVisibility(View.VISIBLE);
+        loginLayoutHolder.setVisibility(View.GONE);
+        emailText.setText("");
+        passwordText.setText("");
     }
 }

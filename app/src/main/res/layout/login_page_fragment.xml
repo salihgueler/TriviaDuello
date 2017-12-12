@@ -12,12 +12,9 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:background="@drawable/login_button_selector"
         android:fontFamily="sans-serif-medium"
-        android:text="Log in with Facebook"
+        android:text="@string/log_in_with_facebook"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/google_plus_login_button" />
 
     <Button
         android:id="@+id/google_plus_login_button"
@@ -26,18 +23,23 @@
         android:layout_margin="@dimen/onboarding_main_margin"
         android:background="@drawable/google_plus_button_selector"
         android:fontFamily="sans-serif-medium"
-        android:text="Log in with Google+"
+        android:text="@string/log_in_with_google"
         android:textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/facebook_login_button" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/login_layout_with_email_and_password"/>
 
     <Button
-        android:id="@+id/anonymous_login_button"
+        android:id="@+id/login_with_email_and_password_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/onboarding_main_margin"
         android:background="@drawable/anonymous_button_selector"
         android:fontFamily="sans-serif-medium"
-        android:text="Log in Anonymously"
+        android:text="@string/log_in_with_e_mail_and_password"
         android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@id/google_plus_login_button" />
 
