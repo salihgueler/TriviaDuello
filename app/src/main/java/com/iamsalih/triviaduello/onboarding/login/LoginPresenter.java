@@ -3,6 +3,7 @@ package com.iamsalih.triviaduello.onboarding.login;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;

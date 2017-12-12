@@ -120,14 +120,15 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
-        if (isEmpty()) {
-            if (Utils.isNetworkAvailable(this)) {
+        if (Utils.isNetworkAvailable(this)) {
+            presenter.readPracticeQuestions();
+        } else {
+            Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+            if (isEmpty()) {
                 presenter.getQuestions(null, null);
             } else {
-                Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.empty_questions), Toast.LENGTH_SHORT).show();
             }
-        } else {
-            presenter.readPracticeQuestions();
         }
         Bundle bundle = new Bundle();
         bundle.putString(AppConstants.FIREBASE_KEY_MAIN, getString(R.string.firebase_main_message));

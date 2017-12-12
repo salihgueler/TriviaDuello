@@ -1,6 +1,7 @@
 package com.iamsalih.triviaduello.question;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Html;
 
@@ -13,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iamsalih.triviaduello.AppConstants;
+import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
 import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 import com.iamsalih.triviaduello.data.model.Question;
@@ -30,6 +32,9 @@ import javax.inject.Inject;
 
 public class QuestionsPresenter {
 
+    private static final int TIMER_START_VALUE = 31000;
+    private static final int TIMER_GAP_VALUE = 1000;
+    private static final int SECOND_TO_MILISECOND = 1000;
     @Inject
     FirebaseDatabase firebaseDatabase;
 
@@ -40,9 +45,9 @@ public class QuestionsPresenter {
     private ChildEventListener childEventListener;
     private String gameID;
     private Question currentQuestion;
-    private List<Question> questions = new ArrayList<>();
+    private List<Question> questions;
     private QuestionsView questionsView;
-    private List<Question> wrongQuestions = new ArrayList<>();
+    private List<Question> wrongQuestions;
     private CountDownTimer countDownTimer;
     private QuestionList questionList;
     private boolean isDuelMode;
@@ -50,11 +55,13 @@ public class QuestionsPresenter {
     public QuestionsPresenter(QuestionsView questionsView) {
 
         this.questionsView = questionsView;
+        questions = new ArrayList<>();
+        wrongQuestions = new ArrayList<>();
         TriviaDuelloApplication.firebaseComponent.inject(this);
     }
 
     public void addDatabaseListener() {
-        databaseReference = firebaseDatabase.getReference("Games/"+gameID+"/questionList");
+        databaseReference = firebaseDatabase.getReference(String.format(AppConstants.QUESTION_LIST_KEY, gameID));
 
         childEventListener = new ChildEventListener() {
             @Override
@@ -114,13 +121,13 @@ public class QuestionsPresenter {
 
     private int calculatePracticePoint() {
         int point = 0;
-        for (Question question: questionList.getQuestionList()) {
+        for (Question question : questionList.getQuestionList()) {
             if (questionAnsweredCorrectly(question)) {
-                if (question.getDifficulty().trim().equalsIgnoreCase("easy")){
+                if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_EASY)) {
                     point += 1;
-                } else if (question.getDifficulty().trim().equalsIgnoreCase("medium")){
+                } else if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_MEDIUM)) {
                     point += 2;
-                } else if (question.getDifficulty().trim().equalsIgnoreCase("hard")){
+                } else if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_HARD)) {
                     point += 3;
                 }
             }
@@ -136,14 +143,14 @@ public class QuestionsPresenter {
                 String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 QuestionList questionList = dataSnapshot.getValue(QuestionList.class);
                 int point = 0;
-                for (Question question: questionList.getQuestionList()) {
+                for (Question question : questionList.getQuestionList()) {
                     if (question.getAnsweredBy().trim().equalsIgnoreCase(userID)) {
                         if (questionAnsweredCorrectly(question)) {
-                            if (question.getDifficulty().trim().equalsIgnoreCase("easy")){
+                            if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_EASY)) {
                                 point += 1;
-                            } else if (question.getDifficulty().trim().equalsIgnoreCase("medium")){
+                            } else if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_MEDIUM)) {
                                 point += 2;
-                            } else if (question.getDifficulty().trim().equalsIgnoreCase("hard")){
+                            } else if (question.getDifficulty().trim().equalsIgnoreCase(AppConstants.QUESTION_DIFFICULTY_HARD)) {
                                 point += 3;
                             }
                         }
@@ -151,7 +158,7 @@ public class QuestionsPresenter {
                         wrongQuestions.add(question);
                     }
                 }
-                final DatabaseReference leaderBoard = FirebaseDatabase.getInstance().getReference("leaderBoard/"+userID);
+                final DatabaseReference leaderBoard = FirebaseDatabase.getInstance().getReference("leaderBoard/" + userID);
                 final int finalPoint = point;
                 leaderBoard.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -188,7 +195,8 @@ public class QuestionsPresenter {
         String answers = "";
 
         for (Question question : wrongQuestions) {
-            answers += "Answer for question:\n" + Html.fromHtml(question.getQuestion()) + "\n-> " + Html.fromHtml(question.getCorrectAnswer()) + ".\n\n";
+            answers += String.format(questionsView.getAppContext().getString(R.string.wrong_questions_explanation), Html.fromHtml(question.getQuestion()), Html.fromHtml(question.getCorrectAnswer()));
+            ;
         }
         return answers;
     }
@@ -230,7 +238,7 @@ public class QuestionsPresenter {
 
     private int getPositionOfCurrentQuestion(List<Question> questions) {
 
-        for (int i = 0 ; i < questions.size() ; i++) {
+        for (int i = 0; i < questions.size(); i++) {
             if (questions.get(i).getQuestion().equals(currentQuestion.getQuestion())) {
                 return i;
             }
@@ -243,11 +251,11 @@ public class QuestionsPresenter {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         } else {
-            countDownTimer = new CountDownTimer(31000, 1000) {
+            countDownTimer = new CountDownTimer(TIMER_START_VALUE, TIMER_GAP_VALUE) {
                 @Override
                 public void onTick(long l) {
-                    int timer = (int) l / 1000;
-                    questionsView.setTimerText(String.valueOf(timer) + "s");
+                    int timer = (int) l / SECOND_TO_MILISECOND;
+                    questionsView.setTimerText(String.format(questionsView.getAppContext().getString(R.string.timer_text), String.valueOf(timer)));
                 }
 
                 @Override
@@ -274,5 +282,36 @@ public class QuestionsPresenter {
         databaseReference.removeEventListener(childEventListener);
         questions.clear();
         countDownTimer.cancel();
+    }
+
+    public void initValuesFromSavedInstanceState(Bundle savedInstanceState) {
+        questionList = savedInstanceState.getParcelable(AppConstants.QUESTION_LIST_SAVE_INSTANCE);
+        gameID = savedInstanceState.getString(AppConstants.GAMEID_SAVE_INSTANCE);
+        isDuelMode = savedInstanceState.getBoolean(AppConstants.DUEL_MODE_SAVE_INSTANCE);
+        currentQuestion = savedInstanceState.getParcelable(AppConstants.CURRENT_QUESTION_SAVE_INSTANCE);
+        List<Question> tempQuestion = savedInstanceState.getParcelableArrayList(AppConstants.REST_OF_THE_QUESTIONS_SAVE_INSTANCE);
+        questions.addAll(tempQuestion);
+        questions.add(0, currentQuestion);
+        tempQuestion = savedInstanceState.getParcelableArrayList(AppConstants.WRONG_QUESTIONS_SAVE_INSTANCE);
+        wrongQuestions.addAll(tempQuestion);
+        generateQuestionView();
+    }
+
+    public Bundle saveInstanceState(Bundle outState) {
+        outState.putParcelable(AppConstants.QUESTION_LIST_SAVE_INSTANCE, questionList);
+        // Temp array to pass questions
+        List<Question> tempArray = new ArrayList<>();
+        tempArray.addAll(questions);
+
+        outState.putParcelableArrayList(AppConstants.REST_OF_THE_QUESTIONS_SAVE_INSTANCE, (ArrayList) tempArray);
+        outState.putParcelableArrayList(AppConstants.WRONG_QUESTIONS_SAVE_INSTANCE, (ArrayList) wrongQuestions);
+        outState.putString(AppConstants.GAMEID_SAVE_INSTANCE, gameID);
+        outState.putBoolean(AppConstants.DUEL_MODE_SAVE_INSTANCE, isDuelMode);
+        outState.putParcelable(AppConstants.CURRENT_QUESTION_SAVE_INSTANCE, currentQuestion);
+        return outState;
+    }
+
+    public void removeListeners() {
+        databaseReference.removeEventListener(childEventListener);
     }
 }

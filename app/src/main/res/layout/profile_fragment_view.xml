@@ -15,11 +15,25 @@
         android:id="@+id/profile_picture"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/ic_add_a_photo_black"
         app:layout_constraintBottom_toBottomOf="@+id/image_guideline"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/loading_indicator_holder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/image_guideline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -41,11 +55,11 @@
             android:id="@+id/delete_account_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_margin="@dimen/onboarding_main_margin"
             android:background="@drawable/main_page_button_selector"
             android:fontFamily="sans-serif-medium"
             android:text="Delete Account"
-            android:textColor="@android:color/white"
-            android:layout_alignParentBottom="true"/>
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
