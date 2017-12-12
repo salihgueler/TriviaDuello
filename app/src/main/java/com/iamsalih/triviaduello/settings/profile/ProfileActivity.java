@@ -1,11 +1,13 @@
 package com.iamsalih.triviaduello.settings.profile;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,6 +33,8 @@ import com.google.firebase.storage.UploadTask;
 import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
+import com.iamsalih.triviaduello.onboarding.OnboardingActivity;
+import com.iamsalih.triviaduello.settings.SettingsActivity;
 
 import javax.inject.Inject;
 
@@ -165,14 +169,32 @@ public class ProfileActivity extends AppCompatActivity {
 
     @OnClick(R.id.delete_account_button)
     public void deleteAccount() {
-        user.delete()
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Timber.d( "User account deleted.");
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.dialog_account_delete))
+                .setMessage(getString(R.string.dialog_account_message))
+                .setPositiveButton(getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, int i) {
+                        user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            dialogInterface.dismiss();
+                                            Intent intent = new Intent(ProfileActivity.this, OnboardingActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+                                });
                     }
-                }
-            });
+                }).setNegativeButton(getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).show();
+
     }
 }
