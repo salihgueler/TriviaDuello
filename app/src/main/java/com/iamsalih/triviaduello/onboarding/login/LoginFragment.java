@@ -20,6 +20,7 @@ import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.Utils;
 
 import java.util.Arrays;
 
@@ -115,19 +116,31 @@ public class LoginFragment extends Fragment implements LoginView {
 
     @OnClick(R.id.facebook_login_button)
     public void startLoginWithFacebook() {
-        showProgressBar();
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(AppConstants.FACEBOOK_DEMANDED_INFORMATION));
+        if (Utils.isNetworkAvailable(getActivity())) {
+            showProgressBar();
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(AppConstants.FACEBOOK_DEMANDED_INFORMATION));
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.google_plus_login_button)
     public void startLoginWithGooglePlus() {
-        showProgressBar();
-        presenter.startLoginIntent(this);
+        if (Utils.isNetworkAvailable(getActivity())) {
+            showProgressBar();
+            presenter.startLoginIntent(this);
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.login_with_email_and_password_button)
     public void startLoginWithEmailAndPassword() {
-        showLoginView();
+        if (Utils.isNetworkAvailable(getActivity())) {
+            showLoginView();
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.cancel_login_with_email)

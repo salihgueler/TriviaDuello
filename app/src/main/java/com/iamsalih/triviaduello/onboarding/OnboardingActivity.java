@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.BuildConfig;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.mainscreen.MainScreenActivity;
@@ -50,11 +51,10 @@ public class OnboardingActivity extends AppCompatActivity {
                     finish();
                 } else {
                     initializeViewPager();
-
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("onboarding_screen", "onboarding_started");
-                        FirebaseAnalytics.getInstance(OnboardingActivity.this).logEvent("trivia_duello", bundle);
+                        bundle.putString(AppConstants.FIREBASE_KEY_ONBOARDING, getString(R.string.firebase_onboarding_message));
+                        FirebaseAnalytics.getInstance(OnboardingActivity.this).logEvent(AppConstants.FIREBASE_LOG_KEY_APP_NAME, bundle);
                     }
                 }
             }

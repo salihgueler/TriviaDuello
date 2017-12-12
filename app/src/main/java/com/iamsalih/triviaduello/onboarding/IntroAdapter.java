@@ -13,6 +13,7 @@ import com.iamsalih.triviaduello.onboarding.login.LoginFragment;
 public class IntroAdapter extends FragmentPagerAdapter {
 
     private final static int ONBOARDING_ITEM_COUNT = 4;
+    private int LAST_ELEMENT_INDEX = 3;
 
     public IntroAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
@@ -21,7 +22,7 @@ public class IntroAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if (position == 3) {
+        if (position == LAST_ELEMENT_INDEX) {
             return LoginFragment.newInstance();
         }
         return IntroFragment.newInstance(position);

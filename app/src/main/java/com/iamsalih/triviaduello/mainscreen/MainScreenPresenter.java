@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -20,8 +20,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.api.TriviaCall;
-import com.iamsalih.triviaduello.data.database.QuestionDbHelper;
 import com.iamsalih.triviaduello.data.model.Question;
 import com.iamsalih.triviaduello.leaderboard.LeaderboardActivity;
 import com.iamsalih.triviaduello.service.ReminderJobService;
@@ -31,7 +32,10 @@ import com.iamsalih.triviaduello.data.model.QuestionList;
 import com.iamsalih.triviaduello.question.QuestionsActivity;
 import com.iamsalih.triviaduello.settings.SettingsActivity;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +50,7 @@ import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionE
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_DIFFICULTY;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_TEXT;
 import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.QUESTION_WRONG_ANSWER;
-import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry.TABLE_NAME;
+import static com.iamsalih.triviaduello.data.database.QuestionContract.QuestionEntry._ID;
 import static com.iamsalih.triviaduello.data.database.QuestionProvider.PROVIDER_NAME;
 
 /**
@@ -54,6 +58,12 @@ import static com.iamsalih.triviaduello.data.database.QuestionProvider.PROVIDER_
  */
 
 public class MainScreenPresenter {
+
+    private static final String QUESTION_TYPE = "multiple";
+    private static final int AMOUNT_OF_QUESTIONS = 10;
+    private static final int THREE_DAYS_WINDOW_START = 259200;
+    private static final int THREE_DAYS_WINDOW_END = 518400;
+    private static final String CATEGORY = "category";
 
     @Inject
     TriviaCall triviaCall;
@@ -78,7 +88,7 @@ public class MainScreenPresenter {
 
         view.showProgressBar();
 
-        triviaCall.getQuestions(10, "multiple", getCategories()).enqueue(new Callback<QuestionList>() {
+        triviaCall.getQuestions(AMOUNT_OF_QUESTIONS, QUESTION_TYPE, getCategories()).enqueue(new Callback<QuestionList>() {
             @Override
             public void onResponse(Call<QuestionList> call, Response<QuestionList> response) {
 
@@ -116,8 +126,8 @@ public class MainScreenPresenter {
 
     private Map<String, String> getCategories() {
         Map<String, String> categories = new HashMap<>();
-        SharedPreferences preferences = view.getAppContext().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
-        boolean[] savedCategory = new Gson().fromJson(preferences.getString("selectedCategories", null), boolean[].class);
+        SharedPreferences preferences = view.getAppContext().getSharedPreferences(AppConstants.APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
+        boolean[] savedCategory = new Gson().fromJson(preferences.getString(AppConstants.PREFERENCE_CATEGORY_KEY, null), boolean[].class);
         if (savedCategory != null) {
             if (savedCategory[0] == false) {
                 arrangeCategories(categories, savedCategory);
@@ -133,35 +143,35 @@ public class MainScreenPresenter {
             }
             switch (i) {
                 case 1:
-                    categories.put("category", "9");
+                    categories.put(CATEGORY, "9");
                     break;
                 case 2:
-                    categories.put("category", "10");
-                    categories.put("category", "11");
-                    categories.put("category", "12");
-                    categories.put("category", "13");
-                    categories.put("category", "14");
-                    categories.put("category", "15");
-                    categories.put("category", "16");
-                    categories.put("category", "26");
-                    categories.put("category", "29");
-                    categories.put("category", "31");
-                    categories.put("category", "32");
+                    categories.put(CATEGORY, "10");
+                    categories.put(CATEGORY, "11");
+                    categories.put(CATEGORY, "12");
+                    categories.put(CATEGORY, "13");
+                    categories.put(CATEGORY, "14");
+                    categories.put(CATEGORY, "15");
+                    categories.put(CATEGORY, "16");
+                    categories.put(CATEGORY, "26");
+                    categories.put(CATEGORY, "29");
+                    categories.put(CATEGORY, "31");
+                    categories.put(CATEGORY, "32");
                     break;
                 case 3:
-                    categories.put("category", "17");
-                    categories.put("category", "18");
-                    categories.put("category", "19");
-                    categories.put("category", "30");
+                    categories.put(CATEGORY, "17");
+                    categories.put(CATEGORY, "18");
+                    categories.put(CATEGORY, "19");
+                    categories.put(CATEGORY, "30");
                     break;
                 case 4:
-                    categories.put("category", "21");
+                    categories.put(CATEGORY, "21");
                     break;
                 case 5:
-                    categories.put("category", "23");
+                    categories.put(CATEGORY, "23");
                     break;
                 case 6:
-                    categories.put("category", "25");
+                    categories.put(CATEGORY, "25");
                     break;
             }
         }
@@ -184,9 +194,9 @@ public class MainScreenPresenter {
         dispatcher.cancelAll();
         Job myJob = dispatcher.newJobBuilder()
                 .setService(ReminderJobService.class)
-                .setTag("reminder-job")
+                .setTag(AppConstants.REMINDER_JOB_TAG)
                 .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(0, 259200))
+                .setTrigger(Trigger.executionWindow(THREE_DAYS_WINDOW_START, THREE_DAYS_WINDOW_END))
                 .build();
 
         dispatcher.mustSchedule(myJob);
@@ -196,8 +206,8 @@ public class MainScreenPresenter {
 
         view.showProgressBar();
 
-        final DatabaseReference databaseGameReference = database.getReference("Open Games");
-        databaseReference = database.getReference("Games");
+        final DatabaseReference databaseGameReference = database.getReference(AppConstants.OPEN_GAMES_KEY);
+        databaseReference = database.getReference(AppConstants.ALL_GAMES_KEY);
 
         if (childEventListener == null) {
             initializeEventListenerForGames();
@@ -281,9 +291,9 @@ public class MainScreenPresenter {
 
     public void startGameView(QuestionList questionList, boolean isDuelMode) {
         Intent intent = new Intent(view.getAppContext(), QuestionsActivity.class);
-        intent.putExtra("list", questionList);
-        intent.putExtra("gameID", currentGame == null ? "" : currentGame.getGameId());
-        intent.putExtra("isDuelMode", isDuelMode);
+        intent.putExtra(AppConstants.QUESTION_LIST_INTENT_KEY, questionList);
+        intent.putExtra(AppConstants.GAMEID_INTENT_KEY, currentGame == null ? "" : currentGame.getGameId());
+        intent.putExtra(AppConstants.DUEL_MODE_INTENT_KEY, isDuelMode);
         view.getAppContext().startActivity(intent);
         currentGame = null;
         if (childEventListener != null) {
@@ -303,8 +313,58 @@ public class MainScreenPresenter {
     }
 
     public void cancelDuelMode() {
-        final DatabaseReference databaseGameReference = database.getReference("Open Games");
+        final DatabaseReference databaseGameReference = database.getReference(AppConstants.OPEN_GAMES_KEY);
         databaseGameReference.child(user.getUid()).removeValue();
+        view.hideProgressBar();
+    }
+
+    public void readPracticeQuestions() {
+
+        view.showProgressBar();
+        List<Question> questions = new ArrayList<>();
+
+        String[] projection = {
+                _ID,
+                QUESTION_TEXT,
+                QUESTION_WRONG_ANSWER,
+                QUESTION_CATEGORY,
+                QUESTION_CORRECT_ANSWER,
+                QUESTION_DIFFICULTY
+        };
+
+        Cursor cursor = view.getAppContext().getContentResolver().query(Uri.parse("content://" + PROVIDER_NAME),
+                projection,
+                null,
+                null,
+                null,
+                null);
+
+        int questionTextPosition = cursor.getColumnIndex(QUESTION_TEXT);
+        int questionWrongAnswer = cursor.getColumnIndex(QUESTION_WRONG_ANSWER);
+        int questionCategory = cursor.getColumnIndex(QUESTION_CATEGORY);
+        int questionCorrectAnswer = cursor.getColumnIndex(QUESTION_CORRECT_ANSWER);
+        int questionDifficulty = cursor.getColumnIndex(QUESTION_DIFFICULTY);
+
+        while(cursor.moveToNext()) {
+            Question question = new Question();
+            String questionText = cursor.getString(questionTextPosition);
+            String wrongAnswerText = cursor.getString(questionWrongAnswer);
+            String category = cursor.getString(questionCategory);
+            String correctAnswer = cursor.getString(questionCorrectAnswer);
+            String difficulty = cursor.getString(questionDifficulty);
+            Type listType = new TypeToken<List<String>>() {}.getType();
+            List<String> wrongAnswers = new Gson().fromJson(wrongAnswerText, listType);
+            question.setQuestion(questionText);
+            question.setCorrectAnswer(correctAnswer);
+            question.setDifficulty(difficulty);
+            question.setCategory(category);
+            question.setIncorrectOptions(wrongAnswers);
+            questions.add(question);
+        }
+
+        QuestionList questionList = new QuestionList();
+        questionList.setQuestionList(questions);
+        startGameView(questionList, false);
         view.hideProgressBar();
     }
 }

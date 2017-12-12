@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -20,7 +21,9 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
+import com.iamsalih.triviaduello.Utils;
 import com.iamsalih.triviaduello.data.database.QuestionDbHelper;
 import com.iamsalih.triviaduello.data.model.Question;
 import com.iamsalih.triviaduello.data.model.QuestionList;
@@ -66,6 +69,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     private MainScreenPresenter presenter;
     private FirebaseAnalytics firebaseAnalytics;
+    private boolean isSearchingGame;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,11 +78,17 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
         ButterKnife.bind(this);
         presenter = new MainScreenPresenter(this);
         presenter.resetJobDispatcher();
-        MobileAds.initialize(this, "ca-app-pub-9229514993517521~1418153022");
+        MobileAds.initialize(this, getString(R.string.admob_id));
         adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
         adView.loadAd(adRequest);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        if (savedInstanceState != null) {
+            isSearchingGame = savedInstanceState.getBoolean(AppConstants.IS_SEARCHING_GAME);
+            if (isSearchingGame) {
+                showProgressBar();
+            }
+        }
     }
 
 
@@ -86,6 +96,12 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_screen_menu, menu);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(AppConstants.IS_SEARCHING_GAME, isSearchingGame);
     }
 
     @Override
@@ -105,84 +121,42 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
         if (isEmpty()) {
-            presenter.getQuestions(null, null);
+            if (Utils.isNetworkAvailable(this)) {
+                presenter.getQuestions(null, null);
+            } else {
+                Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+            }
         } else {
-            readPracticeQuestions();
+            presenter.readPracticeQuestions();
         }
         Bundle bundle = new Bundle();
-        bundle.putString("main_screen", "click_start_practice_mode");
-        firebaseAnalytics.logEvent("trivia_duello", bundle);
+        bundle.putString(AppConstants.FIREBASE_KEY_MAIN, getString(R.string.firebase_main_message));
+        firebaseAnalytics.logEvent(AppConstants.FIREBASE_LOG_KEY_APP_NAME, bundle);
     }
 
-    private void readPracticeQuestions() {
-
-        showProgressBar();
-        List<Question> questions = new ArrayList<>();
-
-        String[] projection = {
-                _ID,
-                QUESTION_TEXT,
-                QUESTION_WRONG_ANSWER,
-                QUESTION_CATEGORY,
-                QUESTION_CORRECT_ANSWER,
-                QUESTION_DIFFICULTY
-        };
-
-        Cursor cursor = getContentResolver().query(Uri.parse("content://" + PROVIDER_NAME),
-                projection,
-                null,
-                null,
-                null,
-                null);
-
-        int questionTextPosition = cursor.getColumnIndex(QUESTION_TEXT);
-        int questionWrongAnswer = cursor.getColumnIndex(QUESTION_WRONG_ANSWER);
-        int questionCategory = cursor.getColumnIndex(QUESTION_CATEGORY);
-        int questionCorrectAnswer = cursor.getColumnIndex(QUESTION_CORRECT_ANSWER);
-        int questionDifficulty = cursor.getColumnIndex(QUESTION_DIFFICULTY);
-
-        while(cursor.moveToNext()) {
-            Question question = new Question();
-            String questionText = cursor.getString(questionTextPosition);
-            String wrongAnswerText = cursor.getString(questionWrongAnswer);
-            String category = cursor.getString(questionCategory);
-            String correctAnswer = cursor.getString(questionCorrectAnswer);
-            String difficulty = cursor.getString(questionDifficulty);
-            Type listType = new TypeToken<List<String>>() {}.getType();
-            List<String> wrongAnswers = new Gson().fromJson(wrongAnswerText, listType);
-            question.setQuestion(questionText);
-            question.setCorrectAnswer(correctAnswer);
-            question.setDifficulty(difficulty);
-            question.setCategory(category);
-            question.setIncorrectOptions(wrongAnswers);
-            questions.add(question);
-        }
-
-        QuestionList questionList = new QuestionList();
-        questionList.setQuestionList(questions);
-        startGameView(questionList, false);
-        hideProgressBar();
-    }
-
-    public boolean isEmpty(){
+    public boolean isEmpty() {
 
         QuestionDbHelper helper = new QuestionDbHelper(this);
         SQLiteDatabase database = helper.getReadableDatabase();
         int NoOfRows = (int) DatabaseUtils.queryNumEntries(database, TABLE_NAME);
 
-        if (NoOfRows == 0){
+        if (NoOfRows == 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
     @OnClick(R.id.duel_mode_button)
     public void startDuelMode() {
-        presenter.startDuelProcess();
+        if (Utils.isNetworkAvailable(this)) {
+            presenter.startDuelProcess();
+        } else {
+            Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
+        }
         Bundle bundle = new Bundle();
-        bundle.putString("main_screen", "click_start_duel_mode");
-        firebaseAnalytics.logEvent("trivia_duello", bundle);
+        bundle.putString(AppConstants.FIREBASE_KEY_MAIN, getString(R.string.firebase_main_duel_message));
+        firebaseAnalytics.logEvent(AppConstants.FIREBASE_LOG_KEY_APP_NAME, bundle);
     }
 
     @OnClick(R.id.cancel_button)
@@ -197,6 +171,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public void showProgressBar() {
+        isSearchingGame = true;
         practiceModeButton.setVisibility(View.GONE);
         duelModeButton.setVisibility(View.GONE);
         adView.setVisibility(View.GONE);
@@ -206,6 +181,7 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
 
     @Override
     public void hideProgressBar() {
+        isSearchingGame = false;
         practiceModeButton.setVisibility(View.VISIBLE);
         duelModeButton.setVisibility(View.VISIBLE);
         adView.setVisibility(View.VISIBLE);

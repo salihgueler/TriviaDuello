@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
 import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 import com.iamsalih.triviaduello.data.model.Question;
@@ -262,9 +263,9 @@ public class QuestionsPresenter {
         if (intent.getExtras() == null) {
             return;
         }
-        questionList = intent.getParcelableExtra("list");
-        gameID = intent.getStringExtra("gameID");
-        isDuelMode = intent.getBooleanExtra("isDuelMode", false);
+        questionList = intent.getParcelableExtra(AppConstants.QUESTION_LIST_INTENT_KEY);
+        gameID = intent.getStringExtra(AppConstants.GAMEID_INTENT_KEY);
+        isDuelMode = intent.getBooleanExtra(AppConstants.DUEL_MODE_INTENT_KEY, false);
         questions.addAll(questionList.getQuestionList());
         generateQuestionView();
     }
