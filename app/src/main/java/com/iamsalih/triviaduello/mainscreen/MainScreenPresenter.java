@@ -84,6 +84,11 @@ public class MainScreenPresenter {
         TriviaDuelloApplication.networkComponent.inject(this);
     }
 
+    /**
+     * Method to retrieve questions from API.
+     * @param firstPlayer
+     * @param secondPlayer
+     */
     public void getQuestions(@Nullable final String firstPlayer, @Nullable final String secondPlayer) {
 
         view.showProgressBar();
@@ -110,6 +115,10 @@ public class MainScreenPresenter {
         });
     }
 
+    /**
+     * Save values to local database for offline usages.
+     * @param questionList
+     */
     private void saveValuesToDatabase(QuestionList questionList) {
 
         for (Question question : questionList.getQuestionList()) {
@@ -124,6 +133,10 @@ public class MainScreenPresenter {
         }
     }
 
+    /**
+     * Get categories for the API call
+     * @return categories map
+     */
     private Map<String, String> getCategories() {
         Map<String, String> categories = new HashMap<>();
         SharedPreferences preferences = view.getAppContext().getSharedPreferences(AppConstants.APP_PREFERENCE_KEY, Context.MODE_PRIVATE);
@@ -136,6 +149,11 @@ public class MainScreenPresenter {
         return categories;
     }
 
+    /**
+     * Arrange categories with the related integer values assigned for each category
+     * @param categories
+     * @param savedCategory
+     */
     private void arrangeCategories(Map<String, String> categories, boolean[] savedCategory) {
         for (int i = 1; i < savedCategory.length; i++) {
             if (savedCategory[i] == false) {
@@ -177,6 +195,12 @@ public class MainScreenPresenter {
         }
     }
 
+    /**
+     * Assign current game
+     * @param firstPlayer
+     * @param secondPlayer
+     * @param questionList
+     */
     private void assignCurrentGame(String firstPlayer, String secondPlayer, QuestionList questionList) {
         String game_id = UUID.randomUUID().toString();
         currentGame = new Game();
@@ -188,6 +212,9 @@ public class MainScreenPresenter {
         databaseReference.child(game_id).setValue(currentGame);
     }
 
+    /**
+     * Job dispatcher for reminding game
+     */
     public void resetJobDispatcher() {
 
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(view.getAppContext()));
@@ -202,6 +229,9 @@ public class MainScreenPresenter {
         dispatcher.mustSchedule(myJob);
     }
 
+    /**
+     * Starting duel process and handle the matching algorithm
+     */
     public void startDuelProcess() {
 
         view.showProgressBar();
@@ -318,6 +348,9 @@ public class MainScreenPresenter {
         view.hideProgressBar();
     }
 
+    /**
+     * Offline behaviour for practice version
+     */
     public void readPracticeQuestions() {
 
         view.showProgressBar();

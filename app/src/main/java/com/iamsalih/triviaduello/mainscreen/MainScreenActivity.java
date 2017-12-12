@@ -125,11 +125,11 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
     @OnClick(R.id.practice_mode_button)
     public void startPracticeMode() {
         if (Utils.isNetworkAvailable(this)) {
-            presenter.readPracticeQuestions();
+            presenter.getQuestions(null, null);
         } else {
             Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
             if (isEmpty()) {
-                presenter.getQuestions(null, null);
+                presenter.readPracticeQuestions();
             } else {
                 Toast.makeText(this, getString(R.string.empty_questions), Toast.LENGTH_SHORT).show();
             }

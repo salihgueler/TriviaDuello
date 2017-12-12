@@ -36,4 +36,5 @@ public class AppConstants {
     public static final String FIREBASE_LEADERBOARD_KEY = "leaderboard_screen";
     public static final String PROFILE_PHOTO_KEY = "profile_photo_key.jpg";
     public static final String WIDGET_KEY = "widget_key";
+    public static final String LEADERBOARD_DATABASE_KEY = "leaderBoard";
 }

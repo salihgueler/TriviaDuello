@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.TriviaDuelloApplication;
 import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
@@ -39,10 +40,13 @@ public class LeaderboardPresenter {
         TriviaDuelloApplication.firebaseComponent.inject(this);
     }
 
+    /**
+     *  Method to retrieve leaderboard points users retrieved from the games.
+     */
     public void getLeaderboardPoints() {
 
         leaderboardView.showProgressBar();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("leaderBoard");
+        DatabaseReference databaseReference = firebaseDatabase.getReference(AppConstants.LEADERBOARD_DATABASE_KEY);
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -65,6 +69,10 @@ public class LeaderboardPresenter {
         });
     }
 
+    /**
+     * Method to sort leaderboard item list.
+     * @param leaderBoardItemList sorted version
+     */
     private List<LeaderBoardItem> sortLeaderBoardList(List<LeaderBoardItem> leaderBoardItemList) {
         Collections.sort(leaderBoardItemList, new Comparator<LeaderBoardItem>() {
             @Override
@@ -78,8 +86,11 @@ public class LeaderboardPresenter {
         return leaderBoardItemList;
     }
 
+    /**
+     * Sharing the point with the related application
+     */
     public void shareItWithAnApplication() {
-        DatabaseReference databaseReference = firebaseDatabase.getReference("leaderBoard/" + user.getUid());
+        DatabaseReference databaseReference = firebaseDatabase.getReference(AppConstants.LEADERBOARD_DATABASE_KEY + user.getUid());
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -87,7 +98,7 @@ public class LeaderboardPresenter {
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, leaderboardView.getAppContext().getString(R.string.app_name));
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Hey! I have " + leaderBoardItem.getPoint() + " on Trivia Duello");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(leaderboardView.getAppContext().getString(R.string.message_to_send), String.valueOf(leaderBoardItem.getPoint())));
                 leaderboardView.getAppContext().startActivity(Intent.createChooser(sharingIntent, leaderboardView.getAppContext().getString(R.string.chooser_title)));
             }
 
