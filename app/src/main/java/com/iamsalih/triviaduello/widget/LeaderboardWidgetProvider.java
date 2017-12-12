@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import com.google.firebase.database.DataSnapshot;
@@ -12,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iamsalih.triviaduello.AppConstants;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
 
@@ -41,12 +43,15 @@ public class LeaderboardWidgetProvider extends AppWidgetProvider {
                         while (iterable.iterator().hasNext()) {
                             DataSnapshot snapshot = iterable.iterator().next();
                             LeaderBoardItem leaderBoardItem = snapshot.getValue(LeaderBoardItem.class);
-                            textForWidget += "Name: " + leaderBoardItem.getUserName() + "\n" +
-                                    "Point: " + leaderBoardItem.getPoint() + "\n\n";
+                            textForWidget += String.format(context.getString(R.string.widget_text_template),
+                                    leaderBoardItem.getUserName(), String.valueOf(leaderBoardItem.getPoint()));
+                        }
+                        if (TextUtils.isEmpty(textForWidget)) {
+                            textForWidget = context.getString(R.string.no_leaderboard_yet);
                         }
                         Intent serviceIntent = new Intent(context, LeaderboardWidgetService.class);
                         serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                        serviceIntent.putExtra("widget_key", textForWidget);
+                        serviceIntent.putExtra(AppConstants.WIDGET_KEY, textForWidget);
                         serviceIntent.setData(Uri.parse(serviceIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
                         remoteView.setRemoteAdapter(R.id.leaderboard_scrollable_text, serviceIntent);

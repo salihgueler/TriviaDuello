@@ -22,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iamsalih.triviaduello.AppConstants;
+import com.iamsalih.triviaduello.BuildConfig;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.Utils;
 import com.iamsalih.triviaduello.data.database.QuestionDbHelper;
@@ -78,10 +79,13 @@ public class MainScreenActivity extends AppCompatActivity implements MainScreenV
         ButterKnife.bind(this);
         presenter = new MainScreenPresenter(this);
         presenter.resetJobDispatcher();
-        MobileAds.initialize(this, getString(R.string.admob_id));
-        adView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
-        adView.loadAd(adRequest);
+        if (BuildConfig.FREE_VERSION) {
+            MobileAds.initialize(this, getString(R.string.admob_id));
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).build();
+            adView.loadAd(adRequest);
+        } else {
+            adView.setVisibility(View.GONE);
+        }
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         if (savedInstanceState != null) {
             isSearchingGame = savedInstanceState.getBoolean(AppConstants.IS_SEARCHING_GAME);

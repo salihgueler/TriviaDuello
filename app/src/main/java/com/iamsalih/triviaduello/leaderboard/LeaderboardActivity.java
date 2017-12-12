@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -17,6 +18,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.iamsalih.triviaduello.AppConstants;
+import com.iamsalih.triviaduello.BuildConfig;
 import com.iamsalih.triviaduello.R;
 import com.iamsalih.triviaduello.Utils;
 import com.iamsalih.triviaduello.data.model.LeaderBoardItem;
@@ -41,6 +43,9 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
     @BindView(R.id.adView)
     AdView adView;
 
+    @BindView(R.id.empty_list_text)
+    TextView emptyListText;
+
     private LeaderboardPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,9 +58,13 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
         } else {
             Toast.makeText(this, getString(R.string.connectivity_problem), Toast.LENGTH_SHORT).show();
         }
-        MobileAds.initialize(this, getString(R.string.admob_id));
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        if (BuildConfig.FREE_VERSION) {
+            MobileAds.initialize(this, getString(R.string.admob_id));
+            AdRequest adRequest = new AdRequest.Builder().build();
+            adView.loadAd(adRequest);
+        } else {
+            adView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -95,10 +104,14 @@ public class LeaderboardActivity extends AppCompatActivity implements Leaderboar
 
     @Override
     public void initRecyclerView(List<LeaderBoardItem> leaderBoardItemList) {
-        LeaderBoardAdapter adapter = new LeaderBoardAdapter();
-        adapter.setLeaderBoardItems(leaderBoardItemList);
-        leaderboardList.setLayoutManager(new LinearLayoutManager(this));
-        leaderboardList.setAdapter(adapter);
+        if (leaderBoardItemList.isEmpty()) {
+            emptyListText.setVisibility(View.VISIBLE);
+        } else {
+            LeaderBoardAdapter adapter = new LeaderBoardAdapter();
+            adapter.setLeaderBoardItems(leaderBoardItemList);
+            leaderboardList.setLayoutManager(new LinearLayoutManager(this));
+            leaderboardList.setAdapter(adapter);
+        }
         Bundle bundle = new Bundle();
         bundle.putString(AppConstants.FIREBASE_LEADERBOARD_KEY, getString(R.string.firebase_leaderboard_message));
         FirebaseAnalytics.getInstance(this).logEvent(AppConstants.FIREBASE_LOG_KEY_APP_NAME, bundle);

@@ -35,4 +35,5 @@ public class AppConstants {
     public static final String CURRENT_QUESTION_SAVE_INSTANCE = "current_question_save_instance";
     public static final String FIREBASE_LEADERBOARD_KEY = "leaderboard_screen";
     public static final String PROFILE_PHOTO_KEY = "profile_photo_key.jpg";
+    public static final String WIDGET_KEY = "widget_key";
 }

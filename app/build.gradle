@@ -13,12 +13,23 @@ android {
         targetSdkVersion cfg.targetSdk
         versionCode cfg.versionCode
         versionName cfg.versionName
+        multiDexEnabled true
+        flavorDimensions "default"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        free {
+            buildConfigField "boolean", "FREE_VERSION", "true"
+        }
+        paid {
+            buildConfigField "boolean", "FREE_VERSION", "false"
         }
     }
 }
